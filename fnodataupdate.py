@@ -2,6 +2,7 @@ from os import name
 import pandas as pd
 from datetime import date, datetime
 
+#data
 
 def fnodata(tday):
 

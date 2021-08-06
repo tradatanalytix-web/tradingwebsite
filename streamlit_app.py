@@ -21,7 +21,7 @@ st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹'
 session_state1 = SessionState.get(checkboxed=False)
 session_state2 = SessionState.get(checkboxed=False)
 
-lc, mc, rc = st.beta_columns(3)
+lc, mc, rc = st.columns(3)
 button1 = lc.button("Open Interest")
 button2 = mc.button("FII/DII Data")
 button3 = rc.button("Trading Strategy")
