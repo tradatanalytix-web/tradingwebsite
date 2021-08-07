@@ -10,7 +10,7 @@ def oi_chart_graph(filterdata):
             'CE': 'red',
             'PE': 'green'},
             height=600,
-            width=1200,
+            width=800,
 
             labels={
                      'STRIKE_PR': "Strike Price",
