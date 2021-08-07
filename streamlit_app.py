@@ -14,6 +14,7 @@ from oichart_fun import oi_chart_graph
 from coichart_fun import coi_chart_graph
 from fiidiidatanalysis import fiidiidata
 from streamlit import caching
+from get_cmp_fun import get_cmp
 
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
@@ -21,12 +22,14 @@ st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹'
 session_state1 = SessionState.get(checkboxed=False)
 session_state2 = SessionState.get(checkboxed=False)
 
-lc, mc, rc = st.columns(3)
+tday = st.date_input('Date Input')
+
+lc, mc, rc = st.beta_columns(3)
 button1 = lc.button("Open Interest")
 button2 = mc.button("FII/DII Data")
 button3 = rc.button("Trading Strategy")
 
-tday = st.date_input('Date Input')
+#tday = st.date_input('Date Input')
 
 
 if button1 or session_state1.checkboxed:
@@ -44,8 +47,17 @@ if button1 or session_state1.checkboxed:
         'INSTRUMENT',
         df['INSTRUMENT'].unique()) 
 
+    #Getting CMP
+    gcmp = get_cmp(df, option)
+
     # Graph data as per user choice    
-    filterdata = filtered_data(df, option, option_exp, option_inst)
+    filterdata = filtered_data(df, option, option_exp, option_inst, gcmp)
+
+    
+    #md_results = f"**{option}** Futures LTP **{gcmp}**"
+    #st.markdown(md_results)
+    #lc.markdown(f"<h4 style='text-align: center; color: white; background-color:SlateBlue'>{md_results}</h4>", unsafe_allow_html=True)
+    #st.write("Current Future Price" + gcmp)
 
     # Plotting OI Graph
     oi_chart = oi_chart_graph(filterdata)

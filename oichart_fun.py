@@ -2,14 +2,31 @@ import plotly.express as px
 
 
 def oi_chart_graph(filterdata):
-    oi_chart = px.bar(
+        oi_chart = px.bar(
             filterdata,
             x = 'STRIKE_PR',
             y = 'OPEN_INT', barmode='group', color='OPTION_TYP',
             color_discrete_map={
             'CE': 'red',
             'PE': 'green'},
-            #height=500,width=1000,
+            height=600,
+            width=1200,
+
+            labels={
+                     'STRIKE_PR': "Strike Price",
+                     'OPEN_INT': "Open Interest"
+                 },
+
             title="Open Interest"
             )
-    return(oi_chart)
+
+        fig = oi_chart.update_layout(legend=dict( orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1,
+                ))
+
+        
+    
+        return(fig)
