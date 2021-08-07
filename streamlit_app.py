@@ -24,7 +24,7 @@ session_state2 = SessionState.get(checkboxed=False)
 
 tday = st.date_input('Date Input')
 
-lc, mc, rc = st.beta_columns(3)
+lc, mc, rc = st.columns(3)
 button1 = lc.button("Open Interest")
 button2 = mc.button("FII/DII Data")
 button3 = rc.button("Trading Strategy")
