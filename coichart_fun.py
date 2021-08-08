@@ -10,7 +10,7 @@ def coi_chart_graph(filterdata):
             'CE': 'red',
             'PE': 'green'},
             height=600,
-            width=800,
+            width=850,
 
             labels={
                      'STRIKE_PR': "Strike Price",

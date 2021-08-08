@@ -15,12 +15,19 @@ from coichart_fun import coi_chart_graph
 from fiidiidatanalysis import fiidiidata
 from streamlit import caching
 from get_cmp_fun import get_cmp
+from fii_chart_fun import get_fii_chart
 
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
 
-session_state1 = SessionState.get(checkboxed=False)
-session_state2 = SessionState.get(checkboxed=False)
+#session_state1 = SessionState.get(checkboxed=False)
+#session_state2 = SessionState.get(checkboxed=False)
+
+
+session_state = SessionState.get(
+    button1_clicked=False,
+    button2_clicked=False,
+)
 
 tday = st.sidebar.date_input('Date Input')
 
@@ -38,8 +45,8 @@ button3 = st.sidebar.button("Trading Strategy")
 #tday = st.date_input('Date Input')
 
 
-if button1 or session_state1.checkboxed:
-    session_state1.checkboxed = True
+if button1 or session_state.button1_clicked:
+    session_state.button1_clicked = True
 
     df = fnodata(tday)
     option = lc.selectbox(
@@ -70,7 +77,7 @@ if button1 or session_state1.checkboxed:
     bb1 = lc.button("Generate OI Graphs")
 
     if bb1:
-        session_state1.checkboxed = False
+        session_state.button1_clicked = False
         
         oi_chart = oi_chart_graph(filterdata)
 
@@ -85,15 +92,24 @@ if button1 or session_state1.checkboxed:
         st.plotly_chart(coi_chart)
 
 
-if button2 or session_state2.checkboxed:
-    session_state2.checkboxed = True
+if button2 or session_state.button2_clicked:
+    session_state.button2_clicked = True
+    df1 = fiidiidata(tday)
 
+    client_type = lc.selectbox('Client',
+            df1['Client Type'].unique())
+
+    
+    date_fii = rc.selectbox('Contract Date',
+            df1['Date'].unique())
+    
     bb2 = rc.button("Generate FII Graphs")
 
     if bb2:
-        session_state2.checkboxed = False
-        df1 = fiidiidata(tday)
-        st.write(df1.head())
+        session_state.button2_clicked = False
+        fii_chart = get_fii_chart(df1)
+        st.plotly_chart(fii_chart)
+        st.write(df1.tail())
 
 
 
