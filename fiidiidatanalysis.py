@@ -2,7 +2,7 @@ from os import name
 import pandas as pd
 from datetime import date, datetime
 
-isVolDataLoad = True
+isVolDataLoad = False
 
 def fiidiidata(tday):
 
