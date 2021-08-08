@@ -47,7 +47,7 @@ button3 = st.sidebar.button("Trading Strategy")
 
 if button1 or session_state.button1_clicked:
     session_state.button1_clicked = True
-
+    st.write(tday)
     df = fnodata(tday)
     option = lc.selectbox(
             'Symbol',
