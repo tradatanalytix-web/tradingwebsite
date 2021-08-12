@@ -16,12 +16,10 @@ from fiidiidatanalysis import fiidiidata
 from streamlit import caching
 from get_cmp_fun import get_cmp
 from fii_chart_fun import get_fii_chart
-
+from filterclientdat_fun import filterclientdat
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
 
-#session_state1 = SessionState.get(checkboxed=False)
-#session_state2 = SessionState.get(checkboxed=False)
 
 
 session_state = SessionState.get(
@@ -38,11 +36,6 @@ button2 = st.sidebar.button("FII/DII Data")
 button3 = st.sidebar.button("Trading Strategy")
 
 
-#button1 = lc.button("Open Interest")
-#button2 = mc.button("FII/DII Data")
-#button3 = rc.button("Trading Strategy")
-
-#tday = st.date_input('Date Input')
 
 
 if button1 or session_state.button1_clicked:
@@ -105,11 +98,13 @@ if button2 or session_state.button2_clicked:
     
     bb2 = rc.button("Generate FII Graphs")
 
+    filterclientdata = filterclientdat(df1, client_type) 
+
     if bb2:
         session_state.button2_clicked = False
-        fii_chart = get_fii_chart(df1)
+        fii_chart = get_fii_chart(filterclientdata)
         st.plotly_chart(fii_chart)
-        st.write(df1.tail())
+        st.write(filterclientdata.tail())
 
 
 
