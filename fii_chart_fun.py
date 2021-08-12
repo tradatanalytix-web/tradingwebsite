@@ -8,8 +8,18 @@ def get_fii_chart(df1):
     
         animals=['FII Call Long + FII Put Short', 'FII Put Long + FII Call Short']
 
-        fig1 = go.Figure([go.Bar(x=animals, y=[bu, be])])
+        #fig1 = go.Figure([go.Bar(x=animals, y=[bu, be])])
+        fig2 = px.bar(x=animals, y=[bu, be], color=animals, 
+        color_discrete_map={
+            'FII Put Long + FII Call Short': 'red',
+            'FII Call Long + FII Put Short': 'green'},
+        labels={
+                     'y': "Open Interest in Contracts",
+                     'x': "Today"
+                 },
+
+        title="Participant Data")
         
     
     
-        return(fig1)
+        return(fig2)
