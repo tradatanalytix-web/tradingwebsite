@@ -2,8 +2,8 @@ from Myround import *
 
 
 def filtered_data (df, option, option_exp, option_inst, gcmp):
-    upperstrike = float(myround(1.05*gcmp))
-    lowerstrike = float(myround(0.95*gcmp))
+    upperstrike = float(myround(1.03*gcmp))
+    lowerstrike = float(myround(0.97*gcmp))
 
 
     filterdata = df[(df['SYMBOL'] == option) &
