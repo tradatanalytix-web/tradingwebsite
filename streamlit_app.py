@@ -17,6 +17,7 @@ from streamlit import caching
 from get_cmp_fun import get_cmp
 from fii_chart_fun import get_fii_chart
 from filterclientdat_fun import filterclientdat
+from pcr_fun import pcr_cal
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
 
@@ -76,6 +77,8 @@ if button1 or session_state.button1_clicked:
 
         coi_chart = coi_chart_graph(filterdata)
 
+        pcr = pcr_cal(df, option, option_exp, option_inst)
+
         # Plotting OI Graph
         
         st.plotly_chart(oi_chart)
@@ -83,6 +86,9 @@ if button1 or session_state.button1_clicked:
         # Plotting OI Change Graph
         
         st.plotly_chart(coi_chart)
+
+        st.markdown(f"<h4 style='text-align: center; color: white; background-color:SlateBlue'>{pcr}</h4>", unsafe_allow_html=True)
+        #st.write(pcr)
 
 
 if button2 or session_state.button2_clicked:
@@ -104,7 +110,14 @@ if button2 or session_state.button2_clicked:
         session_state.button2_clicked = False
         fii_chart = get_fii_chart(filterclientdata)
         st.plotly_chart(fii_chart)
-        st.write(filterclientdata.tail())
+        st.write(df1.tail())
+        #pcr2 = df1['Bullish Index Option'].sum() / df1['Bearish Index Option'].sum()
+        #st.write(pcr2)
+
+
+
+
+
 
 
 
