@@ -24,6 +24,7 @@ from call_option import call_payoff
 from put_option import put_payoff
 import matplotlib.pyplot as plt
 plt.style.use('seaborn-darkgrid')
+import plotly.express as px
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
 
@@ -187,7 +188,7 @@ if button3 or session_state.button3_clicked:
             #plt.axhline(y = 0, color = 'r', linestyle = '-')
             plt.legend()
             #fig.add_hline(y=0)
-            st.plotly_chart(fig)
+            st.pyplot(fig)
 
             #fig2 = ironbutterfly(options_chart, sT)
             #st.plotly_chart(fig2)
