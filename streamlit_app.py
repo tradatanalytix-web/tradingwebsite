@@ -189,8 +189,8 @@ if button3 or session_state.button3_clicked:
             #fig.add_hline(y=0)
             st.plotly_chart(fig)
 
-            fig2 = ironbutterfly(options_chart, sT)
-            st.plotly_chart(fig2)
+            #fig2 = ironbutterfly(options_chart, sT)
+            #st.plotly_chart(fig2)
 
 
 
