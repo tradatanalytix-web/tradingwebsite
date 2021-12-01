@@ -188,10 +188,11 @@ if button3 or session_state.button3_clicked:
             #plt.axhline(y = 0, color = 'r', linestyle = '-')
             plt.legend()
             #fig.add_hline(y=0)
-            st.pyplot(fig)
+            st.plotly_chart(fig)
 
-            fig2 = ironbutterfly(options_chart, sT)
-            st.plotly_chart(fig2)
+
+            #fig2 = ironbutterfly(options_chart, sT)
+            #st.plotly_chart(fig2)
 
 
 
