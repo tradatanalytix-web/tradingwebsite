@@ -7,6 +7,7 @@ import requests
 import streamlit.components.v1 as components
 import plotly.express as px
 from datetime import date, datetime
+from Myround import myround
 from fnodataupdate import fnodata
 import SessionState
 from filterdata_fun import filtered_data
@@ -18,6 +19,7 @@ from get_cmp_fun import get_cmp
 from fii_chart_fun import get_fii_chart
 from filterclientdat_fun import filterclientdat
 from pcr_fun import pcr_cal
+from optionspayoff import ironbutterfly
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
 
@@ -26,6 +28,7 @@ st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹'
 session_state = SessionState.get(
     button1_clicked=False,
     button2_clicked=False,
+    button3_clicked=False
 )
 
 tday = st.sidebar.date_input('Date Input')
@@ -86,8 +89,9 @@ if button1 or session_state.button1_clicked:
         # Plotting OI Change Graph
         
         st.plotly_chart(coi_chart)
-
-        st.markdown(f"<h4 style='text-align: center; color: white; background-color:SlateBlue'>{pcr}</h4>", unsafe_allow_html=True)
+        md_results = f"**PCR for {option} **{round(pcr, 2)}"
+        st.markdown(md_results)
+        #st.markdown(f"<h4 style='text-align: center; color: white; background-color:SlateBlue'>{pcr}</h4>", unsafe_allow_html=True)
         #st.write(pcr)
 
 
@@ -114,6 +118,31 @@ if button2 or session_state.button2_clicked:
         #pcr2 = df1['Bullish Index Option'].sum() / df1['Bearish Index Option'].sum()
         #st.write(pcr2)
 
+
+
+if button3 or session_state.button3_clicked:
+
+    c1, c2, c3, c4 = st.columns(4)
+
+    df = fnodata(tday)
+    gcmp_2 = get_cmp(df,"NIFTY")
+    price = myround(gcmp_2)    
+    session_state.button3_clicked = True
+    strike1 = c1.number_input(value = price, label = "ATM Strike CE - SELL")
+    pr1 = c1.number_input(label="Price for CE Short")
+    strike2 = c2.number_input(value = (price + 200),label = "OTM Strike CE - BUY")
+    pr2 = c2.number_input(label = "Price for CE Long")
+    strike3 = c3.number_input(value = price, label = "ATM Strike PE - SELL")
+    pr3 = c3.number_input(label = "Price for PE Short")
+    strike4 = c4.number_input(value = (price - 200), label = "OTM Strike PE - BUY")
+    pr4 = c4.number_input(label = "Price for PE Long")
+    bb3 = c1.button("Get Strategy Graph")
+
+    if bb3:
+            session_state.button3_clicked = False
+            options_chart = ironbutterfly(strike1, pr1, strike2, pr2, strike3, pr3, strike4, pr4)
+            st.set_option('deprecation.showPyplotGlobalUse', False)    
+            st.pyplot(options_chart)
 
 
 
