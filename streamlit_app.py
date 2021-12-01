@@ -20,6 +20,10 @@ from fii_chart_fun import get_fii_chart
 from filterclientdat_fun import filterclientdat
 from pcr_fun import pcr_cal
 from optionspayoff import ironbutterfly
+from call_option import call_payoff
+from put_option import put_payoff
+import matplotlib.pyplot as plt
+plt.style.use('seaborn-darkgrid')
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
 
@@ -121,28 +125,69 @@ if button2 or session_state.button2_clicked:
 
 
 if button3 or session_state.button3_clicked:
+        session_state.button3_clicked = True
+        c1, c2, c3, c4 = st.columns(4)
 
-    c1, c2, c3, c4 = st.columns(4)
+        df = fnodata(tday)
+        gcmp_2 = get_cmp(df,"NIFTY")
+        price = myround(gcmp_2)    
+        session_state.button3_clicked = True
+    
+        
 
-    df = fnodata(tday)
-    gcmp_2 = get_cmp(df,"NIFTY")
-    price = myround(gcmp_2)    
-    session_state.button3_clicked = True
-    strike1 = c1.number_input(value = price, label = "ATM Strike CE - SELL")
-    pr1 = c1.number_input(label="Price for CE Short")
-    strike2 = c2.number_input(value = (price + 200),label = "OTM Strike CE - BUY")
-    pr2 = c2.number_input(label = "Price for CE Long")
-    strike3 = c3.number_input(value = price, label = "ATM Strike PE - SELL")
-    pr3 = c3.number_input(label = "Price for PE Short")
-    strike4 = c4.number_input(value = (price - 200), label = "OTM Strike PE - BUY")
-    pr4 = c4.number_input(label = "Price for PE Long")
-    bb3 = c1.button("Get Strategy Graph")
+        # SYMBOL price
+        spot_price = myround(gcmp_2)
 
-    if bb3:
+        # Long call
+        strike_price_long_call = c2.number_input(value = (price + 200),label = "OTM Strike CE - BUY")
+        premium_long_call = c2.number_input(label = "Price for CE Long")
+
+        # Short call
+        strike_price_short_call = c1.number_input(value = price, label = "ATM Strike CE - SELL")
+        premium_short_call = c1.number_input(label="Price for CE Short")
+
+        # Long put
+        strike_price_long_put = c4.number_input(value = (price - 200), label = "OTM Strike PE - BUY") 
+        premium_long_put = c4.number_input(label = "Price for PE Long")
+
+        # Short put
+        strike_price_short_put = c3.number_input(value = price, label = "ATM Strike PE - SELL") 
+        premium_short_put = c3.number_input(label = "Price for PE Short")
+
+
+        # Stock price range at expiration of the call
+        sT = np.arange(0.92*spot_price, 1.08*spot_price, 1)    
+
+        bb3 = c1.button("Get Strategy Graph")
+
+        if bb3:
             session_state.button3_clicked = False
-            options_chart = ironbutterfly(strike1, pr1, strike2, pr2, strike3, pr3, strike4, pr4)
-            st.set_option('deprecation.showPyplotGlobalUse', False)    
-            st.pyplot(options_chart)
+
+            payoff_long_put = put_payoff(sT, strike_price_long_put, premium_long_put)
+            payoff_short_put = put_payoff(sT, strike_price_short_put, premium_short_put) * -1.0
+            payoff_long_call = call_payoff(sT, strike_price_long_call, premium_long_call)
+            payoff_short_call = call_payoff(sT, strike_price_short_call, premium_short_call) * -1.0
+            options_chart = payoff_long_call + payoff_long_put + payoff_short_call + payoff_short_put
+
+            md_results_profit = f"**Max Profit **{round(max(options_chart)*50)}"
+            st.markdown(md_results_profit)
+            md_results_loss = f"**Max loss **{round(min(options_chart)*50)}"
+            st.markdown(md_results_loss)            
+            #print("Max Profit:", max(options_chart))
+            #print("Max Loss:", min(options_chart))
+
+            # Plot
+            fig, ax = plt.subplots(figsize=(8, 5))
+            ax.spines['bottom'].set_position('zero')
+            #ax.plot(sT, payoff_long_call, '--', label='Long 920 Strike Call', color='g')
+            #ax.plot(sT, payoff_short_call, '--', label='Short 940 Strike Call ', color='r')
+            ax.plot(sT, options_chart, label='Iron Butterly Payoff')
+            plt.xlabel('Price')
+            plt.ylabel('Profit and loss')
+            plt.legend()
+            st.pyplot(fig)
+
+
 
 
 
