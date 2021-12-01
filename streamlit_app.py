@@ -184,8 +184,13 @@ if button3 or session_state.button3_clicked:
             ax.plot(sT, options_chart, label='Iron Butterly Payoff')
             plt.xlabel('Price')
             plt.ylabel('Profit and loss')
+            #plt.axhline(y = 0, color = 'r', linestyle = '-')
             plt.legend()
-            st.pyplot(fig)
+            #fig.add_hline(y=0)
+            st.plotly_chart(fig)
+
+            fig2 = ironbutterfly(options_chart, sT)
+            st.plotly_chart(fig2)
 
 
 
