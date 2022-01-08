@@ -3,3 +3,6 @@ pandas
 streamlit
 plotly.express
 matplotlib
+streamlit_option_menu
+chart-studio
+

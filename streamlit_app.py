@@ -25,10 +25,34 @@ from put_option import put_payoff
 import matplotlib.pyplot as plt
 plt.style.use('seaborn-darkgrid')
 import plotly.express as px
+from chart_studio import plotly as py
+from streamlit_option_menu import option_menu
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
 
+st.markdown('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">', unsafe_allow_html=True)
 
+st.markdown("""
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark" style="background-color: #3498DB;">
+  <a class="navbar-brand" href="https://www.youtube.com/channel/UCw2H-l2iNaRjXapU-mrJZXQ" target="_blank">TraDatAnalytix</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link disabled" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.youtube.com/channel/UCw2H-l2iNaRjXapU-mrJZXQ" target="_blank">YouTube</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://twitter.com/PitanjalDatta" target="_blank">Twitter</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+""", unsafe_allow_html=True)
 
 session_state = SessionState.get(
     button1_clicked=False,
@@ -186,9 +210,16 @@ if button3 or session_state.button3_clicked:
             plt.xlabel('Price')
             plt.ylabel('Profit and loss')
             #plt.axhline(y = 0, color = 'r', linestyle = '-')
+            plt.axhline(y = 0, color = 'r', linestyle = 'dashed')
             plt.legend()
+            st.pyplot(fig)
+            
             #fig.add_hline(y=0)
             st.plotly_chart(fig)
+
+            #fig2 = py.plot_mpl(fig)
+            #fig2.add_hline(y=0)
+            #st.plotly_chart(fig2)
 
 
             #fig2 = ironbutterfly(options_chart, sT)
