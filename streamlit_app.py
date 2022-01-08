@@ -57,22 +57,37 @@ st.markdown("""
 session_state = SessionState.get(
     button1_clicked=False,
     button2_clicked=False,
-    button3_clicked=False
+    button3_clicked=False,
+    home_button = False
 )
 
 tday = st.sidebar.date_input('Date Input')
 
 lc, mc, rc = st.columns(3)
 
-button1 = st.sidebar.button("Open Interest")
-button2 = st.sidebar.button("FII/DII Data")
-button3 = st.sidebar.button("Trading Strategy")
 
+with st.sidebar:
+  selected_option = option_menu(
+    "TraDatAnalytix",
+    ['Home','Open Interest', 'FII/DII Data', 'Trading Strategy'],
+    icons = ['house-fill','bar-chart-fill', 'gear', 'option'],
+    menu_icon = "cast",
+    default_index = 0
+  )
 
+if selected_option == "Home ":
 
+  lc.metric("Temperature", "70 °F", "1.2 °F")
+  mc.metric("Wind", "9 mph", "-8%")
+  rc.metric("Humidity", "86%", "4%")
+  #################################################################
+  #st.markdown("""
+  
+#""", unsafe_allow_html=True)
 
-if button1 or session_state.button1_clicked:
-    session_state.button1_clicked = True
+  ###################################################################
+
+if selected_option == "Open Interest":
     st.write(tday)
     df = fnodata(tday)
     option = lc.selectbox(
@@ -103,7 +118,7 @@ if button1 or session_state.button1_clicked:
     bb1 = lc.button("Generate OI Graphs")
 
     if bb1:
-        session_state.button1_clicked = False
+        
         
         oi_chart = oi_chart_graph(filterdata)
 
@@ -124,8 +139,8 @@ if button1 or session_state.button1_clicked:
         #st.write(pcr)
 
 
-if button2 or session_state.button2_clicked:
-    session_state.button2_clicked = True
+if selected_option == "FII/DII Data":
+    
     df1 = fiidiidata(tday)
 
     client_type = lc.selectbox('Client',
@@ -140,7 +155,6 @@ if button2 or session_state.button2_clicked:
     filterclientdata = filterclientdat(df1, client_type) 
 
     if bb2:
-        session_state.button2_clicked = False
         fii_chart = get_fii_chart(filterclientdata)
         st.plotly_chart(fii_chart)
         st.write(df1.tail())
@@ -149,14 +163,12 @@ if button2 or session_state.button2_clicked:
 
 
 
-if button3 or session_state.button3_clicked:
-        session_state.button3_clicked = True
+if selected_option == "Trading Strategy":
         c1, c2, c3, c4 = st.columns(4)
 
         df = fnodata(tday)
         gcmp_2 = get_cmp(df,"NIFTY")
         price = myround(gcmp_2)    
-        session_state.button3_clicked = True
     
         
 
@@ -186,7 +198,7 @@ if button3 or session_state.button3_clicked:
         bb3 = c1.button("Get Strategy Graph")
 
         if bb3:
-            session_state.button3_clicked = False
+            
 
             payoff_long_put = put_payoff(sT, strike_price_long_put, premium_long_put)
             payoff_short_put = put_payoff(sT, strike_price_short_put, premium_short_put) * -1.0
