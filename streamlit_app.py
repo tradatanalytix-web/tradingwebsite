@@ -34,6 +34,8 @@ from mpl_finance import candlestick_ohlc
 import matplotlib.dates as mpl_dates
 import matplotlib.pyplot as plt
 import cufflinks as cf
+from datetime import date
+from datetime import timedelta
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
 
@@ -69,6 +71,7 @@ session_state = SessionState.get(
 )
 
 tday = st.sidebar.date_input('Date Input')
+previous_Date = tday - timedelta(days = 180)
 
 lc, mc, rc = st.columns(3)
 
@@ -85,37 +88,48 @@ with st.sidebar:
 if selected_option == "Home":
     
     # NIFTY 50 INDIAN
-    df_nifty = yf.download('^NSEI', interval="1d", start="2020-03-15", end="2022-01-05")
+    df_nifty = yf.download('^NSEI', interval="1d", start=previous_Date, end=tday)
     df_nifty['Date'] = pd.to_datetime(df_nifty.index)
     df_nifty['Date'] = df_nifty['Date'].apply(mpl_dates.date2num)
 
     df_nifty = df_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-    # candlestick = go.Candlestick(
-    # x = df.index,
-    # open = df['Open'],
-    # high = df['High'],
-    # low = df['Low'],
-    # close = df['Close'])
-    # fig = go.Figure(data=[candlestick])
-    # st.plotly_chart(fig)
 
     qf = cf.QuantFig(df_nifty, title="NIFTY 50 - INDIA", name='NIFTY 50 - INDIA')
     fig22 = qf.iplot(asFigure=True)
-    
+    nifty_latest_close = round(df_nifty.iloc[len(df_nifty)-1]['Close'],2)
+    nifty_previous_close = round(df_nifty.iloc[len(df_nifty)-2]['Close'],2)
 
     # German DAX
-    df_DAX = yf.download('^GDAXI', interval="1d", start="2020-03-15", end="2022-01-05")
+    df_DAX = yf.download('^GDAXI', interval="1d", start=previous_Date, end=tday)
     df_DAX['Date'] = pd.to_datetime(df_DAX.index)
     df_DAX['Date'] = df_DAX['Date'].apply(mpl_dates.date2num)
 
     df_DAX = df_DAX.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
 
     qf2 = cf.QuantFig(df_DAX, title="DAX - GERMANY", name='DAX - GERMANY')
-    fig23 = qf2.iplot(asFigure=True, width = 200)
-    
-    st.metric(label="Temperature", value="70 °F", delta="1.2 °F")
+    fig23 = qf2.iplot(asFigure=True)
+    dax_latest_close = round(df_DAX.iloc[len(df_DAX)-1]['Close'],2)
+    dax_previous_close = round(df_DAX.iloc[len(df_DAX)-2]['Close'],2)
+
+    # DOW USA
+    df_DOW = yf.download('^DJI', interval="1d", start=previous_Date, end=tday)
+    df_DOW['Date'] = pd.to_datetime(df_DOW.index)
+    df_DOW['Date'] = df_DOW['Date'].apply(mpl_dates.date2num)
+
+    df_DOW = df_DOW.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+    qf3 = cf.QuantFig(df_DOW, title="DOW 30 - USA", name='DOW 30 - USA')
+    fig24 = qf3.iplot(asFigure=True)
+    dow_latest_close = round(df_DOW.iloc[len(df_DOW)-1]['Close'],2)
+    dow_previous_close = round(df_DOW.iloc[len(df_DOW)-2]['Close'],2)
+
+
+    lc.metric(label="NIFTY 50", value=nifty_latest_close, delta=round((nifty_latest_close - nifty_previous_close),2))
+    mc.metric(label="DAX", value=dax_latest_close, delta=round((dax_latest_close - dax_previous_close),2))
+    rc.metric(label="DOW 30", value=dow_latest_close, delta=round((dow_latest_close - dow_previous_close),2))
     st.plotly_chart(fig22)
     st.plotly_chart(fig23)
+    st.plotly_chart(fig24)
 
   #################################################################
   #st.markdown("""
