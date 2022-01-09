@@ -5,4 +5,7 @@ plotly.express
 matplotlib
 streamlit_option_menu
 chart_studio
+cufflinks
+yfinance
+mpl_finance
 

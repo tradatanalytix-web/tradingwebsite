@@ -27,6 +27,13 @@ plt.style.use('seaborn-darkgrid')
 import plotly.express as px
 from chart_studio import plotly as py
 from streamlit_option_menu import option_menu
+from plotly.offline import plot
+import plotly.graph_objects as go
+import yfinance as yf
+from mpl_finance import candlestick_ohlc
+import matplotlib.dates as mpl_dates
+import matplotlib.pyplot as plt
+import cufflinks as cf
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
 
@@ -75,11 +82,41 @@ with st.sidebar:
     default_index = 0
   )
 
-if selected_option == "Home ":
+if selected_option == "Home":
+    
+    # NIFTY 50 INDIAN
+    df_nifty = yf.download('^NSEI', interval="1d", start="2020-03-15", end="2022-01-05")
+    df_nifty['Date'] = pd.to_datetime(df_nifty.index)
+    df_nifty['Date'] = df_nifty['Date'].apply(mpl_dates.date2num)
 
-  lc.metric("Temperature", "70 °F", "1.2 °F")
-  mc.metric("Wind", "9 mph", "-8%")
-  rc.metric("Humidity", "86%", "4%")
+    df_nifty = df_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+    # candlestick = go.Candlestick(
+    # x = df.index,
+    # open = df['Open'],
+    # high = df['High'],
+    # low = df['Low'],
+    # close = df['Close'])
+    # fig = go.Figure(data=[candlestick])
+    # st.plotly_chart(fig)
+
+    qf = cf.QuantFig(df_nifty, title="NIFTY 50 - INDIA", name='NIFTY 50 - INDIA')
+    fig22 = qf.iplot(asFigure=True)
+    
+
+    # German DAX
+    df_DAX = yf.download('^GDAXI', interval="1d", start="2020-03-15", end="2022-01-05")
+    df_DAX['Date'] = pd.to_datetime(df_DAX.index)
+    df_DAX['Date'] = df_DAX['Date'].apply(mpl_dates.date2num)
+
+    df_DAX = df_DAX.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+    qf2 = cf.QuantFig(df_DAX, title="DAX - GERMANY", name='DAX - GERMANY')
+    fig23 = qf2.iplot(asFigure=True, width = 200)
+    
+    st.metric(label="Temperature", value="70 °F", delta="1.2 °F")
+    st.plotly_chart(fig22)
+    st.plotly_chart(fig23)
+
   #################################################################
   #st.markdown("""
   
