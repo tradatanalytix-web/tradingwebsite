@@ -35,4 +35,4 @@ def oc(sym, exp_date):
     ce_df.columns += "_CE"
     pe_df.columns += "_PE"
     df = pd.concat([ce_df, pe_df], axis = 1)
-    return(df)
+    return(response)
