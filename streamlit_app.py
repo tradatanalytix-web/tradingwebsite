@@ -104,6 +104,16 @@ if selected_option == "Real time OI":
 
     refresh_button = st.button("Refresh OI")
     
+    url = "https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY"
+    headers = {"accept-encoding": "gzip, deflate, br",
+              "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+              "referer": "https://www.nseindia.com/get-quotes/derivatives?symbol=NIFTY",
+              "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36}"
+              }
+    
+    response = requests.get(url, headers = headers).text
+    st.write(response)
+
     if refresh_button:
       #sym = "NIFTY"
       #exp_date = "13-Jan-2022"
