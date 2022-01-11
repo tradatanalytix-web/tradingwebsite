@@ -36,6 +36,7 @@ import matplotlib.pyplot as plt
 import cufflinks as cf
 from datetime import date
 from datetime import timedelta
+from realtime_optionchain import oc
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
 
@@ -79,11 +80,33 @@ lc, mc, rc = st.columns(3)
 with st.sidebar:
   selected_option = option_menu(
     "TraDatAnalytix",
-    ['Home','Open Interest', 'FII/DII Data', 'Trading Strategy'],
-    icons = ['house-fill','bar-chart-fill', 'gear', 'option'],
+    ['Home','Real time OI','Open Interest', 'FII/DII Data', 'Trading Strategy'],
+    icons = ['house-fill','bar-chart-fill','bar-chart-fill', 'gear', 'option'],
     menu_icon = "cast",
     default_index = 0
   )
+
+
+if selected_option == "Real time OI":
+    left, right = st.columns(2)
+    sym = left.selectbox(
+            'Index',
+            ('NIFTY', 'BANKNIFTY', 'FINIFTY'))
+
+    exp_date = right.selectbox(
+            'Expiry DATE',
+            ('13-Jan-2022', '20-Jan-2022', '27-Jan-2022'))
+
+
+    refresh_button = st.button("Refresh OI")
+    
+    if refresh_button:
+      #sym = "NIFTY"
+      #exp_date = "13-Jan-2022"
+      
+      df_oi = oc(sym, exp_date)
+      st.write(df_oi)
+
 
 if selected_option == "Home":
     
