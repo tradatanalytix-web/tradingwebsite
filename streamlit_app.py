@@ -37,11 +37,12 @@ import cufflinks as cf
 from datetime import date
 from datetime import timedelta
 from realtime_optionchain import oc
+import json
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
 
-# with open('style.css') as f:
-#   st.markdown(f'<style>{f.read()}<style>', unsafe_allow_html=True)
+with open('style.css') as f:
+  st.markdown(f'<style>{f.read()}<style>', unsafe_allow_html=True)
 
 st.markdown('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">', unsafe_allow_html=True)
 

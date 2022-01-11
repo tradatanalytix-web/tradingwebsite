@@ -8,4 +8,6 @@ chart_studio
 cufflinks
 yfinance
 mpl_finance
+json
+requests
 
