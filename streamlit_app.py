@@ -38,6 +38,7 @@ from datetime import date
 from datetime import timedelta
 from realtime_optionchain import oc
 import json
+from os import name
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
 
@@ -107,7 +108,16 @@ if selected_option == "Real time OI":
     if refresh_button:
       #sym = "NIFTY"
       #exp_date = "13-Jan-2022"
-      
+
+      url = "https://www.nseindia.com/api/option-chain-indices?symbol="+sym
+      headers = {"accept-encoding": "gzip, deflate, br",
+              "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+              "referer": "https://www.nseindia.com/get-quotes/derivatives?symbol="+sym,
+              "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36}"
+                }
+    
+      response = requests.get(url, headers = headers).text
+      st.write(response)
       df_oi = oc(sym, exp_date)
       st.write(df_oi)
 

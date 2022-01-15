@@ -2,6 +2,7 @@ import requests
 import json
 import pandas as pd
 import time
+from os import name
 
 def oc(sym, exp_date):
     url = "https://www.nseindia.com/api/option-chain-indices?symbol="+sym
