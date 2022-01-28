@@ -94,11 +94,14 @@ lc, mc, rc = st.columns(3)
 with st.sidebar:
   selected_option = option_menu(
     "TraDatAnalytix",
-    ['*BUDGET SPECIAL*','Home','Charts','Real time OI','Open Interest', 'FII/DII Data', 'Trading Strategy'],
-    icons = ['bank2','house-fill','option','bar-chart-fill','bar-chart-fill', 'gear', 'option'],
+    ['*BUDGET SPECIAL*','Home','Charts','Real time OI','Open Interest', 'FII/DII Data','Pick Outperformers' ,'Trading Strategy'],
+    icons = ['bank2','house-fill','option','bar-chart-fill','bar-chart-fill', 'gear', 'currency-exchange' ,'option'],
     menu_icon = "cast",
     default_index = 0
   )
+
+
+#####################################################################
 
 if selected_option == "*BUDGET SPECIAL*":
 
@@ -118,6 +121,8 @@ if selected_option == "*BUDGET SPECIAL*":
 
     # Nifty 2015 Analysis
 
+
+    st.subheader("Nifty in 2015")
     df2015_nifty = yf.download('^NSEI', interval="1d", start="2015-01-15", end="2015-02-15")
     df2015_nifty['Date'] = pd.to_datetime(df2015_nifty.index)
     df2015_nifty['Date'] = df2015_nifty['Date'].apply(mpl_dates.date2num)
@@ -137,7 +142,7 @@ if selected_option == "*BUDGET SPECIAL*":
     
     
     # Nifty 2016 Analysis
-
+    st.subheader("Nifty in 2016")
     df2016_nifty = yf.download('^NSEI', interval="1d", start="2016-01-15", end="2016-02-15")
     df2016_nifty['Date'] = pd.to_datetime(df2016_nifty.index)
     df2016_nifty['Date'] = df2016_nifty['Date'].apply(mpl_dates.date2num)
@@ -153,6 +158,7 @@ if selected_option == "*BUDGET SPECIAL*":
     st.pyplot(g1)
 
     # Nifty 2017 Analysis
+    st.subheader("Nifty in 2017")
     df2017_nifty = yf.download('^NSEI', interval="1d", start="2017-01-15", end="2017-02-15")
     df2017_nifty['Date'] = pd.to_datetime(df2017_nifty.index)
     df2017_nifty['Date'] = df2017_nifty['Date'].apply(mpl_dates.date2num)
@@ -171,6 +177,7 @@ if selected_option == "*BUDGET SPECIAL*":
 
 
     # Nifty 2018 Analysis
+    st.subheader("Nifty in 2018")
     df2018_nifty = yf.download('^NSEI', interval="1d", start="2018-01-15", end="2018-02-15")
     df2018_nifty['Date'] = pd.to_datetime(df2018_nifty.index)
     df2018_nifty['Date'] = df2018_nifty['Date'].apply(mpl_dates.date2num)
@@ -189,6 +196,7 @@ if selected_option == "*BUDGET SPECIAL*":
 
 
     # Nifty 2019 Analysis
+    st.subheader("Nifty in 2019")
     df2019_nifty = yf.download('^NSEI', interval="1d", start="2019-01-15", end="2019-02-15")
     df2019_nifty['Date'] = pd.to_datetime(df2019_nifty.index)
     df2019_nifty['Date'] = df2019_nifty['Date'].apply(mpl_dates.date2num)
@@ -207,6 +215,7 @@ if selected_option == "*BUDGET SPECIAL*":
 
 
     # Nifty 2020 Analysis
+    st.subheader("Nifty in 2020")
     df2020_nifty = yf.download('^NSEI', interval="1d", start="2020-01-15", end="2020-02-15")
     df2020_nifty['Date'] = pd.to_datetime(df2020_nifty.index)
     df2020_nifty['Date'] = df2020_nifty['Date'].apply(mpl_dates.date2num)
@@ -225,6 +234,7 @@ if selected_option == "*BUDGET SPECIAL*":
 
 
     # Nifty 2021 Analysis
+    st.subheader("Nifty in 2021")
     df2021_nifty = yf.download('^NSEI', interval="1d", start="2021-01-15", end="2021-02-15")
     df2021_nifty['Date'] = pd.to_datetime(df2021_nifty.index)
     df2021_nifty['Date'] = df2021_nifty['Date'].apply(mpl_dates.date2num)
@@ -243,7 +253,7 @@ if selected_option == "*BUDGET SPECIAL*":
     
 
 
-
+#########################################################################################################
 
 
 
@@ -260,6 +270,8 @@ if selected_option == "Charts":
       fig = volume_profile(df, price_pace=0.1)
       st.plotly_chart(fig)
 
+
+#########################################################################################################
 
 
 if selected_option == "Real time OI":
@@ -291,6 +303,8 @@ if selected_option == "Real time OI":
       df_oi = oc(sym, exp_date)
       st.write(df_oi)
 
+
+######################################################################################################
 
 if selected_option == "Home":
     
@@ -397,6 +411,9 @@ if selected_option == "Open Interest":
         #st.write(pcr)
 
 
+#####################################################################################################3
+
+
 if selected_option == "FII/DII Data":
     
     df1 = fiidiidata(tday)
@@ -419,7 +436,52 @@ if selected_option == "FII/DII Data":
         #pcr2 = df1['Bullish Index Option'].sum() / df1['Bearish Index Option'].sum()
         #st.write(pcr2)
 
+#########################################################################################################
 
+if selected_option == "Pick Outperformers":
+    df_nifty = yf.download('^NSEI', interval="1d", start=previous_Date, end=tday)
+    df_nifty['Date'] = pd.to_datetime(df_nifty.index)
+    df_nifty['Date'] = df_nifty['Date'].apply(mpl_dates.date2num)
+
+    df_nifty = df_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+
+    df_banknifty = yf.download('^NSEBANK', interval="1d", start=previous_Date, end=tday)
+    df_banknifty['Date'] = pd.to_datetime(df_banknifty.index)
+    df_banknifty['Date'] = df_banknifty['Date'].apply(mpl_dates.date2num)
+
+    df_banknifty = df_banknifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+    rsdata_bank = pd.merge(df_nifty, df_banknifty, left_index=True, right_index=True)
+
+    rsdata_bank['Relative Strength'] = rsdata_bank["Close_y"]/rsdata_bank["Close_x"]
+    df_bank = rsdata_bank[['Date_x', 'Relative Strength']]
+    fig_bank = px.line(df_bank, y='Relative Strength', title='Relative Strength - Bank Nifty')
+    st.plotly_chart(fig_bank)
+
+    
+
+    
+    df_niftyit = yf.download('^CNXIT', interval="1d", start=previous_Date, end=tday)
+    df_niftyit['Date'] = pd.to_datetime(df_niftyit.index)
+    df_niftyit['Date'] = df_niftyit['Date'].apply(mpl_dates.date2num)
+
+    df_niftyit = df_niftyit.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+    rsdata_it = pd.merge(df_nifty, df_niftyit, left_index=True, right_index=True)
+
+    rsdata_it['Relative Strength'] = rsdata_it["Close_y"]/rsdata_it["Close_x"]
+    df_it = rsdata_it[['Date_x', 'Relative Strength']]
+    fig_it = px.line(df_it, y='Relative Strength', title='Relative Strength - IT')
+    st.plotly_chart(fig_it)
+
+
+
+
+
+
+
+########################################################################################################3
 
 if selected_option == "Trading Strategy":
         c1, c2, c3, c4 = st.columns(4)
