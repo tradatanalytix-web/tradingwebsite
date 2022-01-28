@@ -40,14 +40,14 @@ from realtime_optionchain import oc
 import json
 from os import name
 from intradaycharts import volume_profile
-from pynse import *
+#from pynse import *
 import logging
 import mplfinance as mpf
 #from alice_blue import *
 import dateutil.parser
 
 
-nse=Nse()
+#nse=Nse()
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
 
