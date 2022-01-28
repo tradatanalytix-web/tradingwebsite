@@ -8,6 +8,6 @@ chart_studio
 cufflinks
 yfinance
 mpl_finance
---upgrade git+https://github.com/StreamAlpha/pynse.git
+git+https://github.com/StreamAlpha/pynse.git
 mplfinance
 
