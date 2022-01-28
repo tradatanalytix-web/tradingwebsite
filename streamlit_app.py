@@ -1,3 +1,4 @@
+from tkinter.ttk import Style
 import streamlit as st
 import numpy as np
 import pandas as pd
@@ -39,6 +40,12 @@ from datetime import timedelta
 from realtime_optionchain import oc
 import json
 from os import name
+from intradaycharts import volume_profile
+from pynse import *
+import logging
+import mplfinance as mpf
+
+nse=Nse()
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
 
@@ -85,11 +92,46 @@ lc, mc, rc = st.columns(3)
 with st.sidebar:
   selected_option = option_menu(
     "TraDatAnalytix",
-    ['Home','Real time OI','Open Interest', 'FII/DII Data', 'Trading Strategy'],
-    icons = ['house-fill','bar-chart-fill','bar-chart-fill', 'gear', 'option'],
+    ['*BUDGET SPECIAL*','Home','Charts','Real time OI','Open Interest', 'FII/DII Data', 'Trading Strategy'],
+    icons = ['bank2','house-fill','option','bar-chart-fill','bar-chart-fill', 'gear', 'option'],
     menu_icon = "cast",
     default_index = 0
   )
+
+if selected_option == "*BUDGET SPECIAL*":
+    st.set_option('deprecation.showPyplotGlobalUse', False)
+    # Nifty 2016 Analysis
+    df2016 = nse.get_hist('NIFTY 50', from_date=dt.date(2016,1,15),to_date=dt.date(2016,2,15))
+    g1 = mpf.plot(df2016, type="candle", style = "yahoo")
+    st.pyplot(g1)
+
+    # Nifty 2017 Analysis
+    df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
+    g2 = mpf.plot(df2017, type="candle", style = "yahoo")
+    st.pyplot(g2)
+
+
+    # Nifty 2018 Analysis
+    df2018 = nse.get_hist('NIFTY 50', from_date=dt.date(2018,1,15),to_date=dt.date(2018,2,15))
+    g3 = mpf.plot(df2018, type="candle", style = "yahoo")
+    st.pyplot(g3)
+
+
+
+
+if selected_option == "Charts":
+    date_select = st.date_input('Intraday Chart for:')
+    sym = st.selectbox('Select Symbol', ('HDB', 'SBIN.NS'))
+    b_intra = st.button("Generate")
+    
+    if b_intra:
+      ed = date_select + timedelta(days=1)
+      df = yf.download(tickers=sym, start=date_select, end=ed, interval="1m")
+      df = df[['Open', 'High', 'Low', 'Close', 'Volume']]
+
+      fig = volume_profile(df, price_pace=0.1)
+      st.plotly_chart(fig)
+
 
 
 if selected_option == "Real time OI":
