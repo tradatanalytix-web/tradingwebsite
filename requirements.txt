@@ -10,4 +10,5 @@ yfinance
 mpl_finance
 git+https://github.com/StreamAlpha/pynse.git
 mplfinance
+streamlit-analytics
 
