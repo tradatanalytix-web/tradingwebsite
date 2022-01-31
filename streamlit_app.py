@@ -57,7 +57,7 @@ import hydralit_components as hc
 
 logo_top = Image.open("./Tradatanalytix-logo-idea-cropped.png")
 
-st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon=logo_top, )
+st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon=logo_top)
 
 
 hide_menu_style = """
