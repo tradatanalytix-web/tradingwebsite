@@ -53,7 +53,21 @@ import pyrebase
 from PIL import Image
 
 
-st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon='💹')
+
+
+logo_top = Image.open("./Tradatanalytix-logo-idea-cropped.png")
+
+st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon=logo_top)
+
+
+hide_menu_style = """
+  <style>
+  #MainMenu {visibility: hidden; }
+  footer {visibility: hidden;}
+  </style>
+"""
+
+st.markdown(hide_menu_style, unsafe_allow_html=True)
 
 
 # Configuration Key
