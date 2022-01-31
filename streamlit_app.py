@@ -51,13 +51,13 @@ import streamlit_analytics
 from auth0_component import login_button
 import pyrebase
 from PIL import Image
-
+import hydralit_components as hc
 
 
 
 logo_top = Image.open("./Tradatanalytix-logo-idea-cropped.png")
 
-st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon=logo_top)
+st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon=logo_top, )
 
 
 hide_menu_style = """
@@ -179,7 +179,7 @@ if choice == 'Login':
           #nse=Nse()
 
 
-          #with open('style.css') as f:
+          # with open('style.css') as f:
           #  st.markdown(f'<style>{f.read()}<style>', unsafe_allow_html=True)
 
           st.markdown('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">', unsafe_allow_html=True)
@@ -205,6 +205,33 @@ if choice == 'Login':
             </div>
           </nav>
           """, unsafe_allow_html=True)
+
+
+
+          # # specify the primary menu definition
+          # menu_data = [
+          #     #{'icon': "far fa-copy", 'label':"Left End"},
+          #     #{'id':'Copy','icon':"🐙",'label':"Copy"},
+          #     {'icon': "fa-solid fa-radar",'label':"Social Media", 'submenu':[{'id':' subid11','icon': "fa fa-paperclip", 'label':"Facebook"},{'id':'subid12', 'label':"Twitter"},{'id':'subid13','icon': "fa fa-database", 'label':"Youtube"}]},
+          #     {'icon': "far fa-chart-bar", 'label':"Chart"},#no tooltip message
+          #     #{'id':' Crazy return value 💀','icon': "💀", 'label':"Calendar"},
+          #     {'icon': "fas fa-tachometer-alt", 'label':"Dashboard",'ttip':"I'm the Dashboard tooltip!"}, #can add a tooltip message
+          #     #{'icon': "far fa-copy", 'label':"Right End"},
+          #     #{'icon': "fa-solid fa-radar",'label':"Dropdown2", 'submenu':[{'label':"Sub-item 1", 'icon': "fa fa-meh"},{'label':"Sub-item 2"},{'icon':'🙉','label':"Sub-item 3",}]},
+          # ]
+
+          # over_theme = {'txc_inactive': '#FFFFFF'}
+          # menu_id = hc.nav_bar(
+          #     menu_definition=menu_data,
+          #     override_theme=over_theme,
+          #     home_name='Home',
+          #     login_name='Logout',
+          #     hide_streamlit_markers=False, #will show the st hamburger as well as the navbar now!
+          #     sticky_nav=True, #at the top or not
+          #     sticky_mode='pinned', #jumpy or not-jumpy, but sticky or pinned
+          # )
+
+
 
           session_state = SessionState.get(
               button1_clicked=False,
@@ -247,300 +274,300 @@ if choice == 'Login':
               if selected2 == "Nifty":
 
 
-
-                with st.expander("See Trading Strategy -- Details"):
-                  st.write("""
-                      1. Check Budget Day Closing, whether Green Candle or Red Candle, at 3:15 pm on Budget Day.
-                      2. If its a GREEN candle at 3:15 pm of Budget day, mark the LOW of Budget day, and SELL PUT option strike price nearest to the LOW price.
-                      3. If its a RED candle at 3:15 pm of Budget day, mark the HIGH of Budget day, and SELL CALL option strike price nearest to the HIGH price.
-                      4. Apart from 2020, this strategy worked every year from 2015 to 2021.
-                  """)
-
-
-                # Nifty 2015 Analysis
+                with hc.HyLoader('Loading',hc.Loaders.standard_loaders,index=[3,0,5]):
+                  with st.expander("See Trading Strategy -- Details"):
+                    st.write("""
+                        1. Check Budget Day Closing, whether Green Candle or Red Candle, at 3:15 pm on Budget Day.
+                        2. If its a GREEN candle at 3:15 pm of Budget day, mark the LOW of Budget day, and SELL PUT option strike price nearest to the LOW price.
+                        3. If its a RED candle at 3:15 pm of Budget day, mark the HIGH of Budget day, and SELL CALL option strike price nearest to the HIGH price.
+                        4. Apart from 2020, this strategy worked every year from 2015 to 2021.
+                    """)
 
 
-                st.subheader("Nifty in 2015")
-                df2015_nifty = yf.download('^NSEI', interval="1d", start="2015-01-15", end="2015-02-15")
-                df2015_nifty['Date'] = pd.to_datetime(df2015_nifty.index)
-                df2015_nifty['Date'] = df2015_nifty['Date'].apply(mpl_dates.date2num)
-
-                df2015_nifty = df2015_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-                #df2016 = nse.get_hist('NIFTY 50', from_date=dt.date(2016,1,15),to_date=dt.date(2016,2,15))
-                vls=['2015-02-12']
-                ga1 = mpf.plot(df2015_nifty, type="candle", style = "yahoo", 
-                              #alines=two_points, 
-                              vlines=dict(vlines=vls,colors='c', linewidths=255,alpha=0.4),
-                              hlines=8840.80)
-                #g1 = mpf.plot(df2016_nifty, type="candle", style = "yahoo")
-                st.pyplot(ga1)
-
-                
-                
-                
-                
-                # Nifty 2016 Analysis
-                st.subheader("Nifty in 2016")
-                df2016_nifty = yf.download('^NSEI', interval="1d", start="2016-01-15", end="2016-02-15")
-                df2016_nifty['Date'] = pd.to_datetime(df2016_nifty.index)
-                df2016_nifty['Date'] = df2016_nifty['Date'].apply(mpl_dates.date2num)
-
-                df2016_nifty = df2016_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-                #df2016 = nse.get_hist('NIFTY 50', from_date=dt.date(2016,1,15),to_date=dt.date(2016,2,15))
-                vls=['2016-02-12']
-                g1 = mpf.plot(df2016_nifty, type="candle", style = "yahoo", 
-                              #alines=two_points, 
-                              vlines=dict(vlines=vls,colors='c', linewidths=345,alpha=0.4),
-                              hlines=7600)
-                #g1 = mpf.plot(df2016_nifty, type="candle", style = "yahoo")
-                st.pyplot(g1)
-
-                # Nifty 2017 Analysis
-                st.subheader("Nifty in 2017")
-                df2017_nifty = yf.download('^NSEI', interval="1d", start="2017-01-15", end="2017-02-15")
-                df2017_nifty['Date'] = pd.to_datetime(df2017_nifty.index)
-                df2017_nifty['Date'] = df2017_nifty['Date'].apply(mpl_dates.date2num)
-
-                df2017_nifty = df2017_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-                
-                #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
-                #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
-                vls=['2017-02-14']
-                g2 = mpf.plot(df2017_nifty, type="candle", style = "yahoo", 
-                              #alines=two_points, 
-                              vlines=dict(vlines=vls,colors='c', linewidths=330,alpha=0.4),
-                              hlines=8537)
-                st.pyplot(g2)
-                #st.write(df2017_nifty)
+                  # Nifty 2015 Analysis
 
 
-                # Nifty 2018 Analysis
-                st.subheader("Nifty in 2018")
-                df2018_nifty = yf.download('^NSEI', interval="1d", start="2018-01-15", end="2018-02-15")
-                df2018_nifty['Date'] = pd.to_datetime(df2018_nifty.index)
-                df2018_nifty['Date'] = df2018_nifty['Date'].apply(mpl_dates.date2num)
+                  st.subheader("Nifty in 2015")
+                  df2015_nifty = yf.download('^NSEI', interval="1d", start="2015-01-15", end="2015-02-15")
+                  df2015_nifty['Date'] = pd.to_datetime(df2015_nifty.index)
+                  df2015_nifty['Date'] = df2015_nifty['Date'].apply(mpl_dates.date2num)
 
-                df2018_nifty = df2018_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-                
-                #st.write(df2018_nifty)
-                #df2018 = nse.get_hist('NIFTY 50', from_date=dt.date(2018,1,15),to_date=dt.date(2018,2,15))
-                #g3 = mpf.plot(df2018_nifty, type="candle", style = "yahoo")
-                vls=['2018-02-07']
-                g3 = mpf.plot(df2018_nifty, type="candle", style = "yahoo", 
-                              #alines=two_points, 
-                              vlines=dict(vlines=vls,colors='c', linewidths=150,alpha=0.4),
-                              hlines=11117.34)
-                st.pyplot(g3)
+                  df2015_nifty = df2015_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+                  #df2016 = nse.get_hist('NIFTY 50', from_date=dt.date(2016,1,15),to_date=dt.date(2016,2,15))
+                  vls=['2015-02-12']
+                  ga1 = mpf.plot(df2015_nifty, type="candle", style = "yahoo", 
+                                #alines=two_points, 
+                                vlines=dict(vlines=vls,colors='c', linewidths=255,alpha=0.4),
+                                hlines=8840.80)
+                  #g1 = mpf.plot(df2016_nifty, type="candle", style = "yahoo")
+                  st.pyplot(ga1)
 
+                  
+                  
+                  
+                  
+                  # Nifty 2016 Analysis
+                  st.subheader("Nifty in 2016")
+                  df2016_nifty = yf.download('^NSEI', interval="1d", start="2016-01-15", end="2016-02-15")
+                  df2016_nifty['Date'] = pd.to_datetime(df2016_nifty.index)
+                  df2016_nifty['Date'] = df2016_nifty['Date'].apply(mpl_dates.date2num)
 
-                # Nifty 2019 Analysis
-                st.subheader("Nifty in 2019")
-                df2019_nifty = yf.download('^NSEI', interval="1d", start="2019-01-15", end="2019-02-15")
-                df2019_nifty['Date'] = pd.to_datetime(df2019_nifty.index)
-                df2019_nifty['Date'] = df2019_nifty['Date'].apply(mpl_dates.date2num)
+                  df2016_nifty = df2016_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+                  #df2016 = nse.get_hist('NIFTY 50', from_date=dt.date(2016,1,15),to_date=dt.date(2016,2,15))
+                  vls=['2016-02-12']
+                  g1 = mpf.plot(df2016_nifty, type="candle", style = "yahoo", 
+                                #alines=two_points, 
+                                vlines=dict(vlines=vls,colors='c', linewidths=345,alpha=0.4),
+                                hlines=7600)
+                  #g1 = mpf.plot(df2016_nifty, type="candle", style = "yahoo")
+                  st.pyplot(g1)
 
-                df2019_nifty = df2019_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-                
-                #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
-                #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
-                vls=['2019-02-12']
-                g4 = mpf.plot(df2019_nifty, type="candle", style = "yahoo", 
-                              #alines=two_points, 
-                              vlines=dict(vlines=vls,colors='c', linewidths=243,alpha=0.4),
-                              hlines=10813.45)
-                st.pyplot(g4)
+                  # Nifty 2017 Analysis
+                  st.subheader("Nifty in 2017")
+                  df2017_nifty = yf.download('^NSEI', interval="1d", start="2017-01-15", end="2017-02-15")
+                  df2017_nifty['Date'] = pd.to_datetime(df2017_nifty.index)
+                  df2017_nifty['Date'] = df2017_nifty['Date'].apply(mpl_dates.date2num)
 
-
-
-                # Nifty 2020 Analysis
-                st.subheader("Nifty in 2020")
-                df2020_nifty = yf.download('^NSEI', interval="1d", start="2020-01-15", end="2020-02-15")
-                df2020_nifty['Date'] = pd.to_datetime(df2020_nifty.index)
-                df2020_nifty['Date'] = df2020_nifty['Date'].apply(mpl_dates.date2num)
-
-                df2020_nifty = df2020_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-                
-                #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
-                #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
-                vls=['2020-02-14']
-                g5 = mpf.plot(df2020_nifty, type="candle", style = "yahoo", 
-                              #alines=two_points, 
-                              vlines=dict(vlines=vls,colors='c', linewidths=300,alpha=0.4),
-                              hlines=12017.35)
-                st.pyplot(g5)
-                #st.write(df2017_nifty)
+                  df2017_nifty = df2017_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+                  
+                  #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
+                  #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
+                  vls=['2017-02-14']
+                  g2 = mpf.plot(df2017_nifty, type="candle", style = "yahoo", 
+                                #alines=two_points, 
+                                vlines=dict(vlines=vls,colors='c', linewidths=330,alpha=0.4),
+                                hlines=8537)
+                  st.pyplot(g2)
+                  #st.write(df2017_nifty)
 
 
-                # Nifty 2021 Analysis
-                st.subheader("Nifty in 2021")
-                df2021_nifty = yf.download('^NSEI', interval="1d", start="2021-01-15", end="2021-02-15")
-                df2021_nifty['Date'] = pd.to_datetime(df2021_nifty.index)
-                df2021_nifty['Date'] = df2021_nifty['Date'].apply(mpl_dates.date2num)
+                  # Nifty 2018 Analysis
+                  st.subheader("Nifty in 2018")
+                  df2018_nifty = yf.download('^NSEI', interval="1d", start="2018-01-15", end="2018-02-15")
+                  df2018_nifty['Date'] = pd.to_datetime(df2018_nifty.index)
+                  df2018_nifty['Date'] = df2018_nifty['Date'].apply(mpl_dates.date2num)
 
-                df2021_nifty = df2021_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-                
-                #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
-                #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
-                vls=['2021-02-12']
-                g6 = mpf.plot(df2021_nifty, type="candle", style = "yahoo", 
-                              #alines=two_points, 
-                              vlines=dict(vlines=vls,colors='c', linewidths=340,alpha=0.4),
-                              hlines=13661.75)
-                st.pyplot(g6)
-                #st.write(df2017_nifty)
+                  df2018_nifty = df2018_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+                  
+                  #st.write(df2018_nifty)
+                  #df2018 = nse.get_hist('NIFTY 50', from_date=dt.date(2018,1,15),to_date=dt.date(2018,2,15))
+                  #g3 = mpf.plot(df2018_nifty, type="candle", style = "yahoo")
+                  vls=['2018-02-07']
+                  g3 = mpf.plot(df2018_nifty, type="candle", style = "yahoo", 
+                                #alines=two_points, 
+                                vlines=dict(vlines=vls,colors='c', linewidths=150,alpha=0.4),
+                                hlines=11117.34)
+                  st.pyplot(g3)
+
+
+                  # Nifty 2019 Analysis
+                  st.subheader("Nifty in 2019")
+                  df2019_nifty = yf.download('^NSEI', interval="1d", start="2019-01-15", end="2019-02-15")
+                  df2019_nifty['Date'] = pd.to_datetime(df2019_nifty.index)
+                  df2019_nifty['Date'] = df2019_nifty['Date'].apply(mpl_dates.date2num)
+
+                  df2019_nifty = df2019_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+                  
+                  #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
+                  #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
+                  vls=['2019-02-12']
+                  g4 = mpf.plot(df2019_nifty, type="candle", style = "yahoo", 
+                                #alines=two_points, 
+                                vlines=dict(vlines=vls,colors='c', linewidths=243,alpha=0.4),
+                                hlines=10813.45)
+                  st.pyplot(g4)
+
+
+
+                  # Nifty 2020 Analysis
+                  st.subheader("Nifty in 2020")
+                  df2020_nifty = yf.download('^NSEI', interval="1d", start="2020-01-15", end="2020-02-15")
+                  df2020_nifty['Date'] = pd.to_datetime(df2020_nifty.index)
+                  df2020_nifty['Date'] = df2020_nifty['Date'].apply(mpl_dates.date2num)
+
+                  df2020_nifty = df2020_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+                  
+                  #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
+                  #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
+                  vls=['2020-02-14']
+                  g5 = mpf.plot(df2020_nifty, type="candle", style = "yahoo", 
+                                #alines=two_points, 
+                                vlines=dict(vlines=vls,colors='c', linewidths=300,alpha=0.4),
+                                hlines=12017.35)
+                  st.pyplot(g5)
+                  #st.write(df2017_nifty)
+
+
+                  # Nifty 2021 Analysis
+                  st.subheader("Nifty in 2021")
+                  df2021_nifty = yf.download('^NSEI', interval="1d", start="2021-01-15", end="2021-02-15")
+                  df2021_nifty['Date'] = pd.to_datetime(df2021_nifty.index)
+                  df2021_nifty['Date'] = df2021_nifty['Date'].apply(mpl_dates.date2num)
+
+                  df2021_nifty = df2021_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+                  
+                  #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
+                  #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
+                  vls=['2021-02-12']
+                  g6 = mpf.plot(df2021_nifty, type="candle", style = "yahoo", 
+                                #alines=two_points, 
+                                vlines=dict(vlines=vls,colors='c', linewidths=340,alpha=0.4),
+                                hlines=13661.75)
+                  st.pyplot(g6)
+                  #st.write(df2017_nifty)
               
               
               
               if selected2 == "Bank Nifty":
-
-                with st.expander("See Trading Strategy -- Details"):
-                  st.write("""
-                      1. Check Budget Day Closing, whether Green Candle or Red Candle, at 3:15 pm on Budget Day.
-                      2. If its a GREEN candle at 3:15 pm of Budget day, mark the LOW of Budget day, and SELL PUT option strike price nearest to the LOW price.
-                      3. If its a RED candle at 3:15 pm of Budget day, mark the HIGH of Budget day, and SELL CALL option strike price nearest to the HIGH price.
-                      4. Apart from 2020, this strategy worked every year from 2015 to 2021.
-                  """)
-
-
-                # # Nifty 2015 Analysis
+                with hc.HyLoader('Loading',hc.Loaders.standard_loaders,index=[3,0,5]):
+                  with st.expander("See Trading Strategy -- Details"):
+                    st.write("""
+                        1. Check Budget Day Closing, whether Green Candle or Red Candle, at 3:15 pm on Budget Day.
+                        2. If its a GREEN candle at 3:15 pm of Budget day, mark the LOW of Budget day, and SELL PUT option strike price nearest to the LOW price.
+                        3. If its a RED candle at 3:15 pm of Budget day, mark the HIGH of Budget day, and SELL CALL option strike price nearest to the HIGH price.
+                        4. Apart from 2020, this strategy worked every year from 2015 to 2021.
+                    """)
 
 
-                # st.subheader("Bank Nifty in 2015")
-                # df2015_nifty = yf.download('^NSEBANK', interval="1d", start="2015-01-15", end="2015-02-15")
-                # df2015_nifty['Date'] = pd.to_datetime(df2015_nifty.index)
-                # df2015_nifty['Date'] = df2015_nifty['Date'].apply(mpl_dates.date2num)
+                  # # Nifty 2015 Analysis
 
-                # df2015_nifty = df2015_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-                # #df2016 = nse.get_hist('NIFTY 50', from_date=dt.date(2016,1,15),to_date=dt.date(2016,2,15))
-                # vls=['2015-02-12']
-                # ga1 = mpf.plot(df2015_nifty, type="candle", style = "yahoo", 
-                #               #alines=two_points, 
-                #               vlines=dict(vlines=vls,colors='c', linewidths=255,alpha=0.4),
-                #               hlines=20600)
-                # #g1 = mpf.plot(df2016_nifty, type="candle", style = "yahoo")
-                # st.pyplot(ga1)
 
+                  # st.subheader("Bank Nifty in 2015")
+                  # df2015_nifty = yf.download('^NSEBANK', interval="1d", start="2015-01-15", end="2015-02-15")
+                  # df2015_nifty['Date'] = pd.to_datetime(df2015_nifty.index)
+                  # df2015_nifty['Date'] = df2015_nifty['Date'].apply(mpl_dates.date2num)
+
+                  # df2015_nifty = df2015_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+                  # #df2016 = nse.get_hist('NIFTY 50', from_date=dt.date(2016,1,15),to_date=dt.date(2016,2,15))
+                  # vls=['2015-02-12']
+                  # ga1 = mpf.plot(df2015_nifty, type="candle", style = "yahoo", 
+                  #               #alines=two_points, 
+                  #               vlines=dict(vlines=vls,colors='c', linewidths=255,alpha=0.4),
+                  #               hlines=20600)
+                  # #g1 = mpf.plot(df2016_nifty, type="candle", style = "yahoo")
+                  # st.pyplot(ga1)
+
+                  
+                  
+                  
+                  
+                  # # Nifty 2016 Analysis
+                  # st.subheader("Bank Nifty in 2016")
+                  # df2016_nifty = yf.download('^NSEBANK', interval="1d", start="2016-01-15", end="2016-02-15")
+                  # df2016_nifty['Date'] = pd.to_datetime(df2016_nifty.index)
+                  # df2016_nifty['Date'] = df2016_nifty['Date'].apply(mpl_dates.date2num)
+
+                  # df2016_nifty = df2016_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+                  # #df2016 = nse.get_hist('NIFTY 50', from_date=dt.date(2016,1,15),to_date=dt.date(2016,2,15))
+                  # st.write(df2016_nifty)
+                  # vls=['2016-02-08']
+                  # g1 = mpf.plot(df2016_nifty, type="candle", style = "yahoo", 
+                  #               #alines=two_points, 
+                  #               vlines=dict(vlines=vls,colors='c', linewidths=345,alpha=0.4),
+                  #               hlines=15565)
+                  # #g1 = mpf.plot(df2016_nifty, type="candle", style = "yahoo")
+                  # st.pyplot(g1)
+
+                  # Nifty 2017 Analysis
+                  st.subheader("Bank Nifty in 2017")
+                  df2017_nifty = yf.download('^NSEBANK', interval="1d", start="2017-01-15", end="2017-02-15")
+                  df2017_nifty['Date'] = pd.to_datetime(df2017_nifty.index)
+                  df2017_nifty['Date'] = df2017_nifty['Date'].apply(mpl_dates.date2num)
+
+                  df2017_nifty = df2017_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+                  
+                  #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
+                  #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
+                  vls=['2017-02-14']
+                  g2 = mpf.plot(df2017_nifty, type="candle", style = "yahoo", 
+                                #alines=two_points, 
+                                vlines=dict(vlines=vls,colors='c', linewidths=330,alpha=0.4),
+                                hlines=19470)
+                  st.pyplot(g2)
+                  #st.write(df2017_nifty)
+
+
+                  # Nifty 2018 Analysis
+                  st.subheader("Bank Nifty in 2018")
+                  df2018_nifty = yf.download('^NSEBANK', interval="1d", start="2018-01-15", end="2018-02-15")
+                  df2018_nifty['Date'] = pd.to_datetime(df2018_nifty.index)
+                  df2018_nifty['Date'] = df2018_nifty['Date'].apply(mpl_dates.date2num)
+
+                  df2018_nifty = df2018_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+                  
+                  #st.write(df2018_nifty)
+                  #df2018 = nse.get_hist('NIFTY 50', from_date=dt.date(2018,1,15),to_date=dt.date(2018,2,15))
+                  #g3 = mpf.plot(df2018_nifty, type="candle", style = "yahoo")
+                  vls=['2018-02-07']
+                  g3 = mpf.plot(df2018_nifty, type="candle", style = "yahoo", 
+                                #alines=two_points, 
+                                vlines=dict(vlines=vls,colors='c', linewidths=150,alpha=0.4),
+                                hlines=27613)
+                  st.pyplot(g3)
+
+
+                  # Nifty 2019 Analysis
+                  st.subheader("Bank Nifty in 2019")
+                  df2019_nifty = yf.download('^NSEBANK', interval="1d", start="2019-01-15", end="2019-02-15")
+                  df2019_nifty['Date'] = pd.to_datetime(df2019_nifty.index)
+                  df2019_nifty['Date'] = df2019_nifty['Date'].apply(mpl_dates.date2num)
+
+                  df2019_nifty = df2019_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+                  
+                  #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
+                  #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
+                  vls=['2019-02-12']
+                  g4 = mpf.plot(df2019_nifty, type="candle", style = "yahoo", 
+                                #alines=two_points, 
+                                vlines=dict(vlines=vls,colors='c', linewidths=243,alpha=0.4),
+                                hlines=27533)
+                  st.pyplot(g4)
+
+
+
+                  # Nifty 2020 Analysis
+                  st.subheader("Bank Nifty in 2020")
+                  df2020_nifty = yf.download('^NSEBANK', interval="1d", start="2020-01-15", end="2020-02-15")
+                  df2020_nifty['Date'] = pd.to_datetime(df2020_nifty.index)
+                  df2020_nifty['Date'] = df2020_nifty['Date'].apply(mpl_dates.date2num)
+
+                  df2020_nifty = df2020_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+                  
+                  #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
+                  #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
+                  vls=['2020-02-14']
+                  g5 = mpf.plot(df2020_nifty, type="candle", style = "yahoo", 
+                                #alines=two_points, 
+                                vlines=dict(vlines=vls,colors='c', linewidths=300,alpha=0.4),
+                                hlines=30918)
+                  st.pyplot(g5)
+                  #st.write(df2017_nifty)
+
+
+                  # Nifty 2021 Analysis
+                  st.subheader("Bank Nifty in 2021")
+                  df2021_nifty = yf.download('^NSEBANK', interval="1d", start="2021-01-15", end="2021-02-15")
+                  df2021_nifty['Date'] = pd.to_datetime(df2021_nifty.index)
+                  df2021_nifty['Date'] = df2021_nifty['Date'].apply(mpl_dates.date2num)
+
+                  df2021_nifty = df2021_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+                  
+                  #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
+                  #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
+                  vls=['2021-02-12']
+                  g6 = mpf.plot(df2021_nifty, type="candle", style = "yahoo", 
+                                #alines=two_points, 
+                                vlines=dict(vlines=vls,colors='c', linewidths=340,alpha=0.4),
+                                hlines=30906)
+                  st.pyplot(g6)
+                  #st.write(df2017_nifty)
                 
-                
-                
-                
-                # # Nifty 2016 Analysis
-                # st.subheader("Bank Nifty in 2016")
-                # df2016_nifty = yf.download('^NSEBANK', interval="1d", start="2016-01-15", end="2016-02-15")
-                # df2016_nifty['Date'] = pd.to_datetime(df2016_nifty.index)
-                # df2016_nifty['Date'] = df2016_nifty['Date'].apply(mpl_dates.date2num)
-
-                # df2016_nifty = df2016_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-                # #df2016 = nse.get_hist('NIFTY 50', from_date=dt.date(2016,1,15),to_date=dt.date(2016,2,15))
-                # st.write(df2016_nifty)
-                # vls=['2016-02-08']
-                # g1 = mpf.plot(df2016_nifty, type="candle", style = "yahoo", 
-                #               #alines=two_points, 
-                #               vlines=dict(vlines=vls,colors='c', linewidths=345,alpha=0.4),
-                #               hlines=15565)
-                # #g1 = mpf.plot(df2016_nifty, type="candle", style = "yahoo")
-                # st.pyplot(g1)
-
-                # Nifty 2017 Analysis
-                st.subheader("Bank Nifty in 2017")
-                df2017_nifty = yf.download('^NSEBANK', interval="1d", start="2017-01-15", end="2017-02-15")
-                df2017_nifty['Date'] = pd.to_datetime(df2017_nifty.index)
-                df2017_nifty['Date'] = df2017_nifty['Date'].apply(mpl_dates.date2num)
-
-                df2017_nifty = df2017_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-                
-                #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
-                #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
-                vls=['2017-02-14']
-                g2 = mpf.plot(df2017_nifty, type="candle", style = "yahoo", 
-                              #alines=two_points, 
-                              vlines=dict(vlines=vls,colors='c', linewidths=330,alpha=0.4),
-                              hlines=19470)
-                st.pyplot(g2)
-                #st.write(df2017_nifty)
-
-
-                # Nifty 2018 Analysis
-                st.subheader("Bank Nifty in 2018")
-                df2018_nifty = yf.download('^NSEBANK', interval="1d", start="2018-01-15", end="2018-02-15")
-                df2018_nifty['Date'] = pd.to_datetime(df2018_nifty.index)
-                df2018_nifty['Date'] = df2018_nifty['Date'].apply(mpl_dates.date2num)
-
-                df2018_nifty = df2018_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-                
-                #st.write(df2018_nifty)
-                #df2018 = nse.get_hist('NIFTY 50', from_date=dt.date(2018,1,15),to_date=dt.date(2018,2,15))
-                #g3 = mpf.plot(df2018_nifty, type="candle", style = "yahoo")
-                vls=['2018-02-07']
-                g3 = mpf.plot(df2018_nifty, type="candle", style = "yahoo", 
-                              #alines=two_points, 
-                              vlines=dict(vlines=vls,colors='c', linewidths=150,alpha=0.4),
-                              hlines=27613)
-                st.pyplot(g3)
-
-
-                # Nifty 2019 Analysis
-                st.subheader("Bank Nifty in 2019")
-                df2019_nifty = yf.download('^NSEBANK', interval="1d", start="2019-01-15", end="2019-02-15")
-                df2019_nifty['Date'] = pd.to_datetime(df2019_nifty.index)
-                df2019_nifty['Date'] = df2019_nifty['Date'].apply(mpl_dates.date2num)
-
-                df2019_nifty = df2019_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-                
-                #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
-                #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
-                vls=['2019-02-12']
-                g4 = mpf.plot(df2019_nifty, type="candle", style = "yahoo", 
-                              #alines=two_points, 
-                              vlines=dict(vlines=vls,colors='c', linewidths=243,alpha=0.4),
-                              hlines=27533)
-                st.pyplot(g4)
-
-
-
-                # Nifty 2020 Analysis
-                st.subheader("Bank Nifty in 2020")
-                df2020_nifty = yf.download('^NSEBANK', interval="1d", start="2020-01-15", end="2020-02-15")
-                df2020_nifty['Date'] = pd.to_datetime(df2020_nifty.index)
-                df2020_nifty['Date'] = df2020_nifty['Date'].apply(mpl_dates.date2num)
-
-                df2020_nifty = df2020_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-                
-                #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
-                #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
-                vls=['2020-02-14']
-                g5 = mpf.plot(df2020_nifty, type="candle", style = "yahoo", 
-                              #alines=two_points, 
-                              vlines=dict(vlines=vls,colors='c', linewidths=300,alpha=0.4),
-                              hlines=30918)
-                st.pyplot(g5)
-                #st.write(df2017_nifty)
-
-
-                # Nifty 2021 Analysis
-                st.subheader("Bank Nifty in 2021")
-                df2021_nifty = yf.download('^NSEBANK', interval="1d", start="2021-01-15", end="2021-02-15")
-                df2021_nifty['Date'] = pd.to_datetime(df2021_nifty.index)
-                df2021_nifty['Date'] = df2021_nifty['Date'].apply(mpl_dates.date2num)
-
-                df2021_nifty = df2021_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-                
-                #df2017 = nse.get_hist('NIFTY 50', from_date=dt.date(2017,1,15),to_date=dt.date(2017,2,15))
-                #two_points = [('2017-02-01', 8537),('2017-02-14', 8537)]
-                vls=['2021-02-12']
-                g6 = mpf.plot(df2021_nifty, type="candle", style = "yahoo", 
-                              #alines=two_points, 
-                              vlines=dict(vlines=vls,colors='c', linewidths=340,alpha=0.4),
-                              hlines=30906)
-                st.pyplot(g6)
-                #st.write(df2017_nifty)
-              
 
 
           #########################################################################################################
 
 
-
+          #if selected_option == "Charts":
           if selected_option == "Charts":
               date_select = st.date_input('Intraday Chart for:')
               sym = st.selectbox('Select Symbol', ('HDB', 'SBIN.NS'))

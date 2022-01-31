@@ -14,4 +14,5 @@ streamlit-analytics
 streamlit-auth0-component
 pyrebase4
 Pillow
+hydralit_components
 
