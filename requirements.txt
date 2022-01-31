@@ -13,5 +13,5 @@ mplfinance
 streamlit-analytics
 streamlit-auth0-component
 pyrebase4
-PIL
+Pillow
 
