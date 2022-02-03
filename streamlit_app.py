@@ -52,6 +52,10 @@ from auth0_component import login_button
 import pyrebase
 from PIL import Image
 import hydralit_components as hc
+from streamlit_echarts import st_echarts
+from dispjsbar import oi_premium_bar_js
+from gauge_chart import pcr_gauge_graph
+
 
 
 
@@ -701,23 +705,52 @@ if choice == 'Login':
               bb1 = lc.button("Generate OI Graphs")
 
               if bb1:
+                  gcmp = round(gcmp/50)*50
+                  #st.write(gcmp)
+                  dfce = filterdata[filterdata['OPTION_TYP']=="CE"]
+                  dfpe = filterdata[filterdata['OPTION_TYP']=="PE"]
+                  #st.write(dfce)
+                  #st.write(dfpe)
+                  strikelist = dfpe['STRIKE_PR'].tolist()
+                  pelist_oi = dfpe['OPEN_INT'].tolist()
+                  celist_oi = dfce["OPEN_INT"].tolist()
                   
-                  
-                  oi_chart = oi_chart_graph(filterdata)
+                  oic_chart_js = oi_premium_bar_js(strikelist, celist_oi, pelist_oi, gcmp, titlegraph = "Open Interest")
 
-                  coi_chart = coi_chart_graph(filterdata)
+                  st_echarts(
+                                options=oic_chart_js, height="400px",
+                            )
+
+
+                  pelist_coi = dfpe['CHG_IN_OI'].tolist()
+                  celist_coi = dfce["CHG_IN_OI"].tolist()
+                  oicoi_chart_js = oi_premium_bar_js(strikelist, celist_coi, pelist_coi, gcmp, titlegraph = "Change in OI")
+
+                  st_echarts(
+                                options=oicoi_chart_js, height="400px",
+                            )
+                            
+                  #oi_chart = oi_chart_graph(filterdata)
+
+                  #coi_chart = coi_chart_graph(filterdata)
 
                   pcr = pcr_cal(df, option, option_exp, option_inst)
+                  pcrgraph = pcr_gauge_graph(pcr/2*100)
 
                   # Plotting OI Graph
                   
-                  st.plotly_chart(oi_chart)
+                  #st.plotly_chart(oi_chart)
 
                   # Plotting OI Change Graph
                   
-                  st.plotly_chart(coi_chart)
+                  #st.plotly_chart(coi_chart)
                   md_results = f"**PCR for {option} **{round(pcr, 2)}"
                   st.markdown(md_results)
+
+                  st_echarts(
+                                options=pcrgraph, height="400px",
+                            )
+                  
                   #st.markdown(f"<h4 style='text-align: center; color: white; background-color:SlateBlue'>{pcr}</h4>", unsafe_allow_html=True)
                   #st.write(pcr)
 
@@ -769,6 +802,25 @@ if choice == 'Login':
               df_bank = rsdata_bank[['Date_x', 'Relative Strength']]
               fig_bank = px.line(df_bank, y='Relative Strength', title='Relative Strength - Bank Nifty')
               st.plotly_chart(fig_bank)
+
+
+              # rsbank_list = df_bank["Relative Strength"].tolist()
+              # datebank_list = df_bank["Date_x"].tolist()
+
+              # option = {
+              #               "xAxis": {
+              #                   "type": "category",
+              #                   "data": datebank_list,
+              #               },
+              #               "yAxis": {"type": "value"},
+              #               "series": [{"data": rsbank_list, "type": "line"}],
+              #           }
+
+              option = oi_premium_bar_js()
+
+              st_echarts(
+                             options=option, height="400px",
+                         )
 
               
 
