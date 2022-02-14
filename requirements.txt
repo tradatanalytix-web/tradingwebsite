@@ -16,4 +16,5 @@ pyrebase4
 Pillow
 hydralit_components
 streamlit-echarts
+streamlit_autorefresh
 

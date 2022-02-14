@@ -55,6 +55,7 @@ import hydralit_components as hc
 from streamlit_echarts import st_echarts
 from dispjsbar import oi_premium_bar_js
 from gauge_chart import pcr_gauge_graph
+from streamlit_autorefresh import st_autorefresh
 
 
 
@@ -590,30 +591,39 @@ if choice == 'Login':
 
 
           if selected_option == "Real time OI":
-              left, right = st.columns(2)
-              # sym = left.selectbox(
-              #         'Index',
-              #         ('NIFTY', 'BANKNIFTY', 'FINIFTY'))
+              left, middle, right = st.columns(3)
+              symbol = left.selectbox(
+                      'Index',
+                      ('NIFTY50', 'BANKNIFTY', 'FINIFTY'), index = 0)
 
-              # exp_date = right.selectbox(
-              #         'Expiry DATE',
-              #         ('13-Jan-2022', '20-Jan-2022', '27-Jan-2022'))
+              exp_date = middle.selectbox(
+                      'Expiry DATE',
+                      ('17-feb-2022', '24-feb-2022'), index = 0)
 
+              autorefresh_time = right.selectbox("Select Auto Refresh Time - Minutes",(0.5, 1, 2, 3), index=0)
+              rainbow = ['15050', '15550', '16050', '16550', '17050', '17550', '18050', '18550']
+              
+              value1, value2 = middle.select_slider(
+                                    'Select a range of values', options = rainbow,
+                                    value = ('16550', '17550'))
+              #st.write('Values:', values)
+              
+              #refresh_button = st.button("Refresh OI")
 
-              refresh_button = st.button("Refresh OI")
-
-              exp_date = '17-feb-2022'
-              symbol = "NIFTY50"
-
-              if refresh_button:
+              #exp_date = '17-feb-2022'
+              #symbol = "NIFTY50"
+              # update every 3 mins
+              st_autorefresh(interval=autorefresh_time * 60 * 1000, key="dataframerefresh")
+              with hc.HyLoader('Fetching Real time Data',hc.Loaders.standard_loaders,index=[3,0,5]):
+              #if refresh_button:
                 #gcmp = get_cmp(df, option)
                 gcmp = 17000
                 gcmp = round(gcmp/50)*50
                 df_realtimeoi = fetch_optionschain(symbol, exp_date)
                 #st.write(df_realtimeoi)
                 dfnew = df_realtimeoi[["strike_price", "ce_ltp", "ce_OI", "pe_ltp" ,"pe_OI" ,"pe_OI_ch"]]
-                rslt_df = dfnew.loc["16500":"17500"]
-                st.write(rslt_df)
+                rslt_df = dfnew.loc[value1:value2]
+                #st.write(rslt_df)
                 strikelist = rslt_df["strike_price"].tolist()
                 pelist_oi = rslt_df["pe_OI"].tolist()
                 celist_oi = rslt_df["ce_OI"].tolist()
