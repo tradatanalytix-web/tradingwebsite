@@ -9,6 +9,7 @@ import streamlit.components.v1 as components
 import plotly.express as px
 from datetime import date, datetime
 from Myround import myround
+from fetchdata_investingcom import fetch_investingcom
 from fnodataupdate import fnodata
 import SessionState
 from filterdata_fun import filtered_data
@@ -56,8 +57,8 @@ from streamlit_echarts import st_echarts
 from dispjsbar import oi_premium_bar_js
 from gauge_chart import pcr_gauge_graph
 from streamlit_autorefresh import st_autorefresh
-
-
+import investpy
+from fetchdata_investingcom import fetch_investingcom
 
 
 logo_top = Image.open("./Tradatanalytix-logo-idea-cropped.png")
@@ -666,6 +667,12 @@ if choice == 'Login':
               dax_previous_close = round(df_DAX.iloc[len(df_DAX)-2]['Close'],2)
 
               # DOW USA
+
+              dftrynifty = fetch_investingcom('Nifty 50')
+              st.write(dftrynifty)
+              chek = investpy.indices.get_indices(country="India")
+              st.write(chek)
+
               df_DOW = yf.download('^DJI', interval="1d", start=previous_Date, end=tday)
               df_DOW['Date'] = pd.to_datetime(df_DOW.index)
               df_DOW['Date'] = df_DOW['Date'].apply(mpl_dates.date2num)
