@@ -37,7 +37,7 @@ import matplotlib.pyplot as plt
 import cufflinks as cf
 from datetime import date
 from datetime import timedelta
-from realtime_optionchain import oc
+from realtime_optionchain import fetch_optionschain
 import json
 from os import name
 from intradaycharts import volume_profile
@@ -591,32 +591,40 @@ if choice == 'Login':
 
           if selected_option == "Real time OI":
               left, right = st.columns(2)
-              sym = left.selectbox(
-                      'Index',
-                      ('NIFTY', 'BANKNIFTY', 'FINIFTY'))
+              # sym = left.selectbox(
+              #         'Index',
+              #         ('NIFTY', 'BANKNIFTY', 'FINIFTY'))
 
-              exp_date = right.selectbox(
-                      'Expiry DATE',
-                      ('13-Jan-2022', '20-Jan-2022', '27-Jan-2022'))
+              # exp_date = right.selectbox(
+              #         'Expiry DATE',
+              #         ('13-Jan-2022', '20-Jan-2022', '27-Jan-2022'))
 
 
               refresh_button = st.button("Refresh OI")
 
-              if refresh_button:
-                #sym = "NIFTY"
-                #exp_date = "13-Jan-2022"
+              exp_date = '17-feb-2022'
+              symbol = "NIFTY50"
 
-                url = "https://www.nseindia.com/api/option-chain-indices?symbol="+sym
-                headers = {"accept-encoding": "gzip, deflate, br",
-                        "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
-                        "referer": "https://www.nseindia.com/get-quotes/derivatives?symbol="+sym,
-                        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36}"
-                          }
-              
-                response = requests.get(url, headers = headers).text
-                st.write(response)
-                df_oi = oc(sym, exp_date)
-                st.write(df_oi)
+              if refresh_button:
+                #gcmp = get_cmp(df, option)
+                gcmp = 17000
+                gcmp = round(gcmp/50)*50
+                df_realtimeoi = fetch_optionschain(symbol, exp_date)
+                #st.write(df_realtimeoi)
+                dfnew = df_realtimeoi[["strike_price", "ce_ltp", "ce_OI", "pe_ltp" ,"pe_OI" ,"pe_OI_ch"]]
+                rslt_df = dfnew.loc["16500":"17500"]
+                st.write(rslt_df)
+                strikelist = rslt_df["strike_price"].tolist()
+                pelist_oi = rslt_df["pe_OI"].tolist()
+                celist_oi = rslt_df["ce_OI"].tolist()
+                  
+                oic_chart_js = oi_premium_bar_js(strikelist, celist_oi, pelist_oi, gcmp, titlegraph = "Real time Open Interest")
+
+                st_echarts(
+                              options=oic_chart_js, height="400px",
+                            )
+                #df_oi = oc(sym, exp_date)
+                #st.write(df_oi)
 
 
           ######################################################################################################
