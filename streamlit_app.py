@@ -257,8 +257,8 @@ if choice == 'Login':
           with st.sidebar:
             selected_option = option_menu(
               "TraDatAnalytix",
-              ['*BUDGET SPECIAL*','Home','Charts','Real time OI','Open Interest', 'FII/DII Data','Pick Outperformers' ,'Trading Strategy'],
-              icons = ['bank2','house-fill','option','bar-chart-fill','bar-chart-fill', 'gear', 'currency-exchange' ,'option'],
+              ['Global Markets','Open Interest Data', 'FII/DII Data','Pick Outperformers' ,'Trading Strategy'],
+              icons = ['globe','bar-chart-fill', 'gear', 'currency-exchange' ,'option'],
               menu_icon = "cast",
               default_index = 0
             )
@@ -593,7 +593,7 @@ if choice == 'Login':
           #########################################################################################################
 
 
-          if selected_option == "Real time OI":
+          if selected_option == "Open Interest Data":
               left, middle, right = st.columns(3)
               symbol = left.selectbox(
                       'Index',
@@ -728,62 +728,58 @@ if choice == 'Login':
 
           ######################################################################################################
 
-          if selected_option == "Home":
-              
-              # NIFTY 50 INDIAN
-              df_nifty = yf.download('^NSEI', interval="1d", start=previous_Date, end=tday)
-              df_nifty['Date'] = pd.to_datetime(df_nifty.index)
-              df_nifty['Date'] = df_nifty['Date'].apply(mpl_dates.date2num)
+          if selected_option == "Global Markets":
 
-              df_nifty = df_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+              # Get CMPS
 
-              qf = cf.QuantFig(df_nifty, title="NIFTY 50 - INDIA", name='NIFTY 50 - INDIA')
-              fig22 = qf.iplot(asFigure=True)
-              nifty_latest_close = round(df_nifty.iloc[len(df_nifty)-1]['Close'],2)
-              nifty_previous_close = round(df_nifty.iloc[len(df_nifty)-2]['Close'],2)
+              #NIFTY 50
+              dftrynifty = fetch_investingcom('Nifty 50', 'india')
+              niftycmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']
+              niftychangepc = (dftrynifty.iloc[len(dftrynifty)-1]['Close'] - dftrynifty.iloc[len(dftrynifty)-2]['Close'])/dftrynifty.iloc[len(dftrynifty)-2]['Close']
+              niftychangepc = "{:.2%}".format(niftychangepc)
 
-              # German DAX
-              df_DAX = yf.download('^GDAXI', interval="1d", start=previous_Date, end=tday)
-              df_DAX['Date'] = pd.to_datetime(df_DAX.index)
-              df_DAX['Date'] = df_DAX['Date'].apply(mpl_dates.date2num)
-
-              df_DAX = df_DAX.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-
-              qf2 = cf.QuantFig(df_DAX, title="DAX - GERMANY", name='DAX - GERMANY')
-              fig23 = qf2.iplot(asFigure=True)
-              dax_latest_close = round(df_DAX.iloc[len(df_DAX)-1]['Close'],2)
-              dax_previous_close = round(df_DAX.iloc[len(df_DAX)-2]['Close'],2)
-
-              # DOW USA
-
-              dftrynifty = fetch_investingcom('Nifty 50')
-              st.write(dftrynifty)
-              chek = investpy.indices.get_indices(country="India")
-              st.write(chek)
-
-              df_DOW = yf.download('^DJI', interval="1d", start=previous_Date, end=tday)
-              df_DOW['Date'] = pd.to_datetime(df_DOW.index)
-              df_DOW['Date'] = df_DOW['Date'].apply(mpl_dates.date2num)
-
-              df_DOW = df_DOW.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-
-              qf3 = cf.QuantFig(df_DOW, title="DOW 30 - USA", name='DOW 30 - USA')
-              fig24 = qf3.iplot(asFigure=True)
-              dow_latest_close = round(df_DOW.iloc[len(df_DOW)-1]['Close'],2)
-              dow_previous_close = round(df_DOW.iloc[len(df_DOW)-2]['Close'],2)
+              # DOW 30
+              dftrynifty = fetch_investingcom('Dow 30', 'united states')
+              dowcmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']
+              dowchangepc = (dftrynifty.iloc[len(dftrynifty)-1]['Close'] - dftrynifty.iloc[len(dftrynifty)-2]['Close'])/dftrynifty.iloc[len(dftrynifty)-2]['Close']
+              dowchangepc = "{:.2%}".format(dowchangepc)
 
 
-              lc.metric(label="NIFTY 50", value=nifty_latest_close, delta=round((nifty_latest_close - nifty_previous_close),2))
-              mc.metric(label="DAX", value=dax_latest_close, delta=round((dax_latest_close - dax_previous_close),2))
-              rc.metric(label="DOW 30", value=dow_latest_close, delta=round((dow_latest_close - dow_previous_close),2))
-              st.plotly_chart(fig22)
-              st.plotly_chart(fig23)
-              st.plotly_chart(fig24)
+              # DAX
+              dftrynifty = fetch_investingcom('DAX', 'germany')
+              daxcmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']
+              daxchangepc = (dftrynifty.iloc[len(dftrynifty)-1]['Close'] - dftrynifty.iloc[len(dftrynifty)-2]['Close'])/dftrynifty.iloc[len(dftrynifty)-2]['Close']
+              daxchangepc = "{:.2%}".format(daxchangepc)
 
-            #################################################################
-            #st.markdown("""
-            
-          #""", unsafe_allow_html=True)
+
+              # CAC
+              dftrynifty = fetch_investingcom('CAC 40', 'france')
+              caccmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']
+              cacchangepc = (dftrynifty.iloc[len(dftrynifty)-1]['Close'] - dftrynifty.iloc[len(dftrynifty)-2]['Close'])/dftrynifty.iloc[len(dftrynifty)-2]['Close']
+              cacchangepc = "{:.2%}".format(cacchangepc)
+
+
+              # Nikkei 225
+              dftrynifty = fetch_investingcom('Nikkei 225', 'Japan')
+              nikcmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']
+              nikchangepc = (dftrynifty.iloc[len(dftrynifty)-1]['Close'] - dftrynifty.iloc[len(dftrynifty)-2]['Close'])/dftrynifty.iloc[len(dftrynifty)-2]['Close']
+              nikchangepc = "{:.2%}".format(nikchangepc)
+
+              # Hang Sang
+              dftrynifty = fetch_investingcom('Hang Seng', 'Hong Kong')
+              hancmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']
+              hanchangepc = (dftrynifty.iloc[len(dftrynifty)-1]['Close'] - dftrynifty.iloc[len(dftrynifty)-2]['Close'])/dftrynifty.iloc[len(dftrynifty)-2]['Close']
+              hanchangepc = "{:.2%}".format(hanchangepc)
+
+
+
+              # Metrics
+              lc.metric(label="Nifty 50 - India", value=niftycmp, delta=niftychangepc)
+              mc.metric(label="DAX - Germany", value=daxcmp, delta=daxchangepc)
+              rc.metric(label="DOW 30 - USA", value=dowcmp, delta=dowchangepc)
+              lc.metric(label="CAC 40 - France", value=caccmp, delta=cacchangepc)
+              mc.metric(label="Nikkei 225 - Japan", value=nikcmp, delta=nikchangepc)
+              rc.metric(label="Hang Sang - Hong Kong", value=hancmp, delta=hanchangepc)
 
             ###################################################################
 
