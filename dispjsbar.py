@@ -55,7 +55,7 @@ def oi_premium_bar_js(strikelist, celist, pelist, gcmp, titlegraph):
                                 "markLine": {
                                             "data": [{ 
                                                 "name": 'CMP',
-                                                "xAxis": str(gcmp)
+                                                "xAxis": gcmp
                                                 }]
                                         }            
                             

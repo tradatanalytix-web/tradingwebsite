@@ -59,9 +59,11 @@ from gauge_chart import pcr_gauge_graph
 from streamlit_autorefresh import st_autorefresh
 import investpy
 from fetchdata_investingcom import fetch_investingcom
+from options_function_cal import OptionStrat
+from options_function_cal import Option
+from dispjsoptions import optionspayoff_diagram
 
-
-logo_top = Image.open("./Tradatanalytix-logo-idea-cropped.png")
+logo_top = Image.open("./tradatanalytix logo.png")
 
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon=logo_top)
 
@@ -142,7 +144,7 @@ if choice == 'Login':
     logincheck = st.empty()
     paymentimage = st.empty()
     login = logincheck.checkbox('Login')
-    image_open_now = Image.open("./QrCode.jpeg")
+    image_open_now = Image.open("./TraDatAnalyttics-01.png")
     paymentimage.image(image_open_now, width=500)
     if login:
           user = auth.sign_in_with_email_and_password(email,password)
@@ -599,7 +601,7 @@ if choice == 'Login':
 
               exp_date = middle.selectbox(
                       'Expiry DATE',
-                      ('17-feb-2022', '24-feb-2022'), index = 0)
+                      ('24-feb-2022', '03-mar-2022'), index = 0)
 
               autorefresh_time = right.selectbox("Select Auto Refresh Time - Minutes",(0.5, 1, 2, 3), index=0)
               rainbow = ['15050', '15550', '16050', '16550', '17050', '17550', '18050', '18550']
@@ -608,33 +610,119 @@ if choice == 'Login':
                                     'Select a range of values', options = rainbow,
                                     value = ('16550', '17550'))
               #st.write('Values:', values)
+
+              selected3 = option_menu("", ["Open Interest", "Change in Open Interest"], 
+              icons=['collection', 'bank2'], 
+              menu_icon="graph-up-arrow", default_index=0, orientation = "horizontal")
+              #selected2
+
               
               #refresh_button = st.button("Refresh OI")
 
               #exp_date = '17-feb-2022'
               #symbol = "NIFTY50"
               # update every 3 mins
-              st_autorefresh(interval=autorefresh_time * 60 * 1000, key="dataframerefresh")
-              with hc.HyLoader('Fetching Real time Data',hc.Loaders.standard_loaders,index=[3,0,5]):
-              #if refresh_button:
-                #gcmp = get_cmp(df, option)
-                gcmp = 17000
-                gcmp = round(gcmp/50)*50
-                df_realtimeoi = fetch_optionschain(symbol, exp_date)
-                #st.write(df_realtimeoi)
-                dfnew = df_realtimeoi[["strike_price", "ce_ltp", "ce_OI", "pe_ltp" ,"pe_OI" ,"pe_OI_ch"]]
-                rslt_df = dfnew.loc[value1:value2]
-                #st.write(rslt_df)
-                strikelist = rslt_df["strike_price"].tolist()
-                pelist_oi = rslt_df["pe_OI"].tolist()
-                celist_oi = rslt_df["ce_OI"].tolist()
+              if selected3 == "Open Interest":
+                st_autorefresh(interval=autorefresh_time * 60 * 1000, key="dataframerefresh")
+                with hc.HyLoader('Fetching Real time Data',hc.Loaders.standard_loaders,index=[3,0,5]):
+                #if refresh_button:
+                  #gcmp = get_cmp(df, option)
+                  dftrynifty = fetch_investingcom('Nifty 50', 'india')
+                  gcmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']
                   
-                oic_chart_js = oi_premium_bar_js(strikelist, celist_oi, pelist_oi, gcmp, titlegraph = "Real time Open Interest")
+                  gcmp = float(round(gcmp/50)*50)
+                  gcmp1 = format(gcmp,".2f")
+                  #st.write(gcmp1)
+                  df_realtimeoi = fetch_optionschain(symbol, exp_date)
+                  #st.write(df_realtimeoi)
+                  dfnew = df_realtimeoi[["strike_price", "ce_ltp", "ce_OI", "ce_OI_ch", "pe_ltp" ,"pe_OI" ,"pe_OI_ch"]]
+                  rslt_df = dfnew.loc[value1:value2]
+                  #st.write(rslt_df)
+                  strikelist = rslt_df["strike_price"].tolist()
+                  pelist_oi = rslt_df["pe_OI"].tolist()
+                  celist_oi = rslt_df["ce_OI"].tolist()
+                    
+                  oic_chart_js = oi_premium_bar_js(strikelist, celist_oi, pelist_oi, gcmp1, titlegraph = "Real time Open Interest")
 
-                st_echarts(
-                              options=oic_chart_js, height="400px",
-                            )
-                #df_oi = oc(sym, exp_date)
+                  st_echarts(
+                                options=oic_chart_js, height="400px",
+                              )
+                  
+                  test_list_ce = [float(i) for i in celist_oi]
+                  test_list_pe = [float(i) for i in pelist_oi]
+
+
+                  sumce = sum(test_list_ce)
+                  sumpe = sum(test_list_pe)          
+
+                  pcr = sumpe / sumce
+                  pcrgraph = pcr_gauge_graph(pcr/2*100)
+
+                  # Plotting OI Graph
+                  
+                  #st.plotly_chart(oi_chart)
+
+                  # Plotting OI Change Graph
+                  
+                  #st.plotly_chart(coi_chart)
+                  md_results = f"**PCR for {symbol} **{round(pcr, 2)}"
+                  st.markdown(md_results)
+
+                  st_echarts(
+                                options=pcrgraph, height="400px",
+                            )              
+
+
+              if selected3 == "Change in Open Interest":
+                st_autorefresh(interval=autorefresh_time * 60 * 1000, key="dataframerefresh")
+                with hc.HyLoader('Fetching Real time Data',hc.Loaders.standard_loaders,index=[3,0,5]):
+                #if refresh_button:
+                  dftrynifty = fetch_investingcom('Nifty 50', 'india')
+                  gcmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']
+                  
+                  gcmp = float(round(gcmp/50)*50)
+                  gcmp1 = format(gcmp,".2f")
+              
+                  df_realtimeoi = fetch_optionschain(symbol, exp_date)
+                  #st.write(df_realtimeoi)
+                  dfnew = df_realtimeoi[["strike_price", "ce_ltp", "ce_OI", "ce_OI_ch", "pe_ltp" ,"pe_OI" ,"pe_OI_ch"]]
+                  rslt_df = dfnew.loc[value1:value2]
+                  #st.write(rslt_df)
+                  strikelist = rslt_df["strike_price"].tolist()
+                  pelist_oi = rslt_df["pe_OI_ch"].tolist()
+                  celist_oi = rslt_df["ce_OI_ch"].tolist()
+                    
+                  oic_chart_js = oi_premium_bar_js(strikelist, celist_oi, pelist_oi, gcmp1, titlegraph = "Change in Open Interest")
+
+                  st_echarts(
+                                options=oic_chart_js, height="400px",
+                              )
+                  
+                  test_list_ce = [float(i) for i in celist_oi]
+                  test_list_pe = [float(i) for i in pelist_oi]
+
+                  sumce = sum(test_list_ce)
+                  sumpe = sum(test_list_pe)            
+
+                  pcr = sumpe / sumce
+                  pcrgraph = pcr_gauge_graph(pcr/2*100)
+
+                  # Plotting OI Graph
+                  
+                  #st.plotly_chart(oi_chart)
+
+                  # Plotting OI Change Graph
+                  
+                  #st.plotly_chart(coi_chart)
+                  md_results = f"**PCR for {symbol} **{round(pcr, 2)}"
+                  st.markdown(md_results)
+
+                  st_echarts(
+                                options=pcrgraph, height="400px",
+                            )              
+
+  
+                  #df_oi = oc(sym, exp_date)
                 #st.write(df_oi)
 
 
@@ -874,29 +962,43 @@ if choice == 'Login':
           if selected_option == "Trading Strategy":
                   c1, c2, c3, c4 = st.columns(4)
 
-                  df = fnodata(tday)
-                  gcmp_2 = get_cmp(df,"NIFTY")
-                  price = myround(gcmp_2)    
-              
+                  #df = fnodata(tday)
+                  #gcmp_2 = get_cmp(df,"NIFTY")
+                  #price = myround(gcmp_2)
+
+                  obj = OptionStrat('Butterfly Spread', 100, {'start': 85, 'stop':115,'by':1})
+                  obj.long_call(90,2, 1)
+                  obj.long_put(90,2,1)
+                  op_strikelist = obj.STs.tolist()
+                  op_payofflist = obj.payoffs.tolist()
+                  maxprofit = max(op_payofflist)
+                  #st.write(op_strikelist[0])
+                  #st.write(op_payofflist)
+                  fig = optionspayoff_diagram(op_strikelist, op_payofflist, maxprofit) 
+
+                  st_echarts(
+                              options=fig, height="400px",
+                            )
+               
                   
 
                   # SYMBOL price
-                  spot_price = myround(gcmp_2)
+                  #spot_price = myround(gcmp_2)
 
                   # Long call
-                  strike_price_long_call = c2.number_input(value = (price + 200),label = "OTM Strike CE - BUY")
+                  strike_price_long_call = c2.number_input(value = (100 + 200),label = "OTM Strike CE - BUY")
                   premium_long_call = c2.number_input(label = "Price for CE Long")
 
                   # Short call
-                  strike_price_short_call = c1.number_input(value = price, label = "ATM Strike CE - SELL")
+                  strike_price_short_call = c1.number_input(value = 199, label = "ATM Strike CE - SELL")
                   premium_short_call = c1.number_input(label="Price for CE Short")
 
                   # Long put
-                  strike_price_long_put = c4.number_input(value = (price - 200), label = "OTM Strike PE - BUY") 
+                  strike_price_long_put = c4.number_input(value = (100 + 200), label = "OTM Strike PE - BUY") 
                   premium_long_put = c4.number_input(label = "Price for PE Long")
 
                   # Short put
-                  strike_price_short_put = c3.number_input(value = price, label = "ATM Strike PE - SELL") 
+                  strike_price_short_put = c3.number_input(value = 100, label = "ATM Strike PE - SELL") 
                   premium_short_put = c3.number_input(label = "Price for PE Short")
 
 
