@@ -634,8 +634,13 @@ if choice == 'Login':
                   gcmp1 = format(gcmp,".2f")
                   #st.write(gcmp1)
                   df_realtimeoi = fetch_optionschain(symbol, exp_date)
+                  
                   #st.write(df_realtimeoi)
                   dfnew = df_realtimeoi[["strike_price", "ce_ltp", "ce_OI", "ce_OI_ch", "pe_ltp" ,"pe_OI" ,"pe_OI_ch"]]
+                  fullpelist_oi = dfnew["pe_OI"].tolist()
+                  fullcelist_oi = dfnew["ce_OI"].tolist()
+                  
+                  
                   rslt_df = dfnew.loc[value1:value2]
                   #st.write(rslt_df)
                   strikelist = rslt_df["strike_price"].tolist()
@@ -648,8 +653,8 @@ if choice == 'Login':
                                 options=oic_chart_js, height="400px",
                               )
                   
-                  test_list_ce = [float(i) for i in celist_oi]
-                  test_list_pe = [float(i) for i in pelist_oi]
+                  test_list_ce = [float(i) for i in fullcelist_oi  if i]
+                  test_list_pe = [float(i) for i in fullpelist_oi  if i]
 
 
                   sumce = sum(test_list_ce)
@@ -686,6 +691,8 @@ if choice == 'Login':
                   df_realtimeoi = fetch_optionschain(symbol, exp_date)
                   #st.write(df_realtimeoi)
                   dfnew = df_realtimeoi[["strike_price", "ce_ltp", "ce_OI", "ce_OI_ch", "pe_ltp" ,"pe_OI" ,"pe_OI_ch"]]
+                  fullpelist_oi = dfnew["pe_OI_ch"].tolist()
+                  fullcelist_oi = dfnew["ce_OI_ch"].tolist()
                   rslt_df = dfnew.loc[value1:value2]
                   #st.write(rslt_df)
                   strikelist = rslt_df["strike_price"].tolist()
@@ -698,8 +705,8 @@ if choice == 'Login':
                                 options=oic_chart_js, height="400px",
                               )
                   
-                  test_list_ce = [float(i) for i in celist_oi]
-                  test_list_pe = [float(i) for i in pelist_oi]
+                  test_list_ce = [float(i) for i in fullcelist_oi if i]
+                  test_list_pe = [float(i) for i in fullpelist_oi if i]
 
                   sumce = sum(test_list_ce)
                   sumpe = sum(test_list_pe)            
@@ -714,7 +721,7 @@ if choice == 'Login':
                   # Plotting OI Change Graph
                   
                   #st.plotly_chart(coi_chart)
-                  md_results = f"**PCR for {symbol} **{round(pcr, 2)}"
+                  md_results = f"**Intraday PCR for {symbol} **{round(pcr, 2)}"
                   st.markdown(md_results)
 
                   st_echarts(
