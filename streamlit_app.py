@@ -65,6 +65,7 @@ from dispjsoptions import optionspayoff_diagram
 from maxpaingraph import maxxpain
 from filterdatafuture import filtered_data_future
 from futureoigraph import futureoigraph_hist
+from pcrchart_h import pcrchart_hist
 
 logo_top = Image.open("./tradatanalytix logo.png")
 
@@ -145,10 +146,10 @@ if choice == 'Sign up':
 # Login Block
 if choice == 'Login':
     logincheck = st.empty()
-    paymentimage = st.empty()
+    #paymentimage = st.empty()
     login = logincheck.checkbox('Login')
-    image_open_now = Image.open("./TraDatAnalyttics-01.png")
-    paymentimage.image(image_open_now, width=500)
+    #image_open_now = Image.open("./TraDatAnalyttics-01.png")
+    #paymentimage.image(image_open_now, width=500)
     if login:
           user = auth.sign_in_with_email_and_password(email,password)
           text_input_container_email.empty()
@@ -923,9 +924,9 @@ if choice == 'Login':
                   left.metric(label="Futures (Current Month) OI Change", value=futoi_current, delta=fut_oi_current_pc)
                   right.metric(label="Futures (Next Month) OI Change", value=futoi_next, delta=fut_oi_next_pc)
 
-                  if fut_oi_current_pc_1 and fut_oi_next_pc_1 > 0.1:
+                  if (fut_oi_current_pc_1 > 0.1) and (fut_oi_next_pc_1 > 0.1):
                     st.markdown(f'<h1 style="color:#04ba65;font-size:24px;">{"Market is Bullish"}</h1>', unsafe_allow_html=True)
-                  elif fut_oi_current_pc_1 and fut_oi_next_pc_1 < -0.1:
+                  elif (fut_oi_current_pc_1 < -0.1) and (fut_oi_next_pc_1 < -0.1):
                     st.markdown(f'<h1 style="color:#ba0419;font-size:24px;">{"Market is Bearish"}</h1>', unsafe_allow_html=True)
                   else:
                     st.markdown(f'<h1 style="color:#d1c300;font-size:24px;">{"Market is Sideways"}</h1>', unsafe_allow_html=True)
@@ -935,12 +936,12 @@ if choice == 'Login':
                   # end_date = date(2022, 2, 18)
 
                   start_date = tday - timedelta(days=10)
-                  end_date = tday - timedelta(days=1)
+                  end_date = tday
                   delta = timedelta(days=1)
                   rowsdata = []
 
                   while start_date <= end_date:
-                      if start_date.weekday() >= 1 and start_date.weekday() <= 4:
+                      if start_date.weekday() >= 0 and start_date.weekday() <= 4:
                         data2 = fnodata(start_date)
                         filterdata = filtered_data_future(data2, option, "FUTIDX")
                         futoi_current = filterdata.iloc[len(filterdata)-3]['CHG_IN_OI']
@@ -976,6 +977,83 @@ if choice == 'Login':
                   #st.write(df) 
                   
                   #st.write(filterdata)
+
+
+
+
+              if selected4 == "PCR":            
+                    data2 = fnodata(tday)
+                    left, right = st.columns(2)
+                    option = left.selectbox(
+                            'Symbol',
+                            df['SYMBOL'].unique())
+
+                    option_exp = right.selectbox(
+                            'Expiry DATE',
+                            df['EXPIRY_DT'].unique())
+
+                    option_inst = "OPTIDX"
+
+                    #Getting CMP
+                    gcmp = get_cmp(df, option)
+
+                    # Graph data as per user choice    
+                    filterdata = filtered_data(df, option, option_exp, option_inst, gcmp)     
+  
+                    #left, right = st.columns(2)
+                    #dftrynifty = fetch_investingcom('Nifty 50', 'india')
+                    #niftycmp = dftrynifty.iloc[len(dftrynifty)-1]['Close'] 
+                    
+                    start_date = tday - timedelta(days=10)
+                    end_date = tday
+                    delta = timedelta(days=1)
+                    rowsdata = []
+
+                    while start_date <= end_date:
+                        if start_date.weekday() >= 0 and start_date.weekday() <= 4:
+                          df = fnodata(start_date)
+                          gcmp = get_cmp(df, option)
+                          filterdata = filtered_data(df, option, option_exp, option_inst, gcmp)
+                          pcr = pcr_cal(df, option, option_exp, option_inst)
+                          rowsdata.append([start_date, pcr])    
+                          #print(start_date)
+                        start_date += delta
+                    
+                    df = pd.DataFrame(rowsdata, columns=["Date", "PCR"])
+                    #st.write(df)
+                    # plot1 = df.plot()
+                    # fig = px.line(        
+                    #               df, #Data Frame
+                    #               x = "Date", #Columns from the data frame
+                    #               y = "Change in Current Month Future OI (%)",
+                    #               title = "Percentage Change in Future OI"
+                    #           )
+                    # fig.update_traces(line_color = "maroon")
+                    # st.plotly_chart(fig) 
+
+
+                    datelist1 = df["Date"].tolist()
+                    datelist = [date_obj.strftime('%Y%m%d') for date_obj in datelist1]
+                    pcrlist = df["PCR"].tolist()
+                    # nextlist = df["Change in Next Month Future OI (%)"].tolist()
+
+                    pcrchartjs = pcrchart_hist(datelist, pcrlist)
+                      
+                    # futurechart_js = futureoigraph_hist(datelist, currlist, nextlist)
+
+                    st_echarts(
+                                  options=pcrchartjs, height="400px",
+                              )
+                    
+                    if (df.iloc[len(df)-1]['PCR'] > df.iloc[len(df)-2]['PCR']):
+                      st.markdown(f'<h1 style="color:#04ba65;font-size:24px;">{"Market is Bullish"}</h1>', unsafe_allow_html=True)
+                    elif (df.iloc[len(df)-1]['PCR'] < df.iloc[len(df)-2]['PCR']):
+                      st.markdown(f'<h1 style="color:#ba0419;font-size:24px;">{"Market is Bearish"}</h1>', unsafe_allow_html=True)
+                    else:
+                      st.markdown(f'<h1 style="color:#d1c300;font-size:24px;">{"Market is Sideways"}</h1>', unsafe_allow_html=True)
+
+                    
+                
 
 
           #####################################################################################################3
