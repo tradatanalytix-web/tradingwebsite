@@ -62,6 +62,9 @@ from fetchdata_investingcom import fetch_investingcom
 from options_function_cal import OptionStrat
 from options_function_cal import Option
 from dispjsoptions import optionspayoff_diagram
+from maxpaingraph import maxxpain
+from filterdatafuture import filtered_data_future
+from futureoigraph import futureoigraph_hist
 
 logo_top = Image.open("./tradatanalytix logo.png")
 
@@ -257,8 +260,8 @@ if choice == 'Login':
           with st.sidebar:
             selected_option = option_menu(
               "TraDatAnalytix",
-              ['Global Markets','Open Interest Data', 'FII/DII Data','Pick Outperformers' ,'Trading Strategy'],
-              icons = ['globe','bar-chart-fill', 'gear', 'currency-exchange' ,'option'],
+              ['Global Markets','Derivatives Data','Open Interest Data', 'FII/DII Data','Pick Outperformers' ,'Trading Strategy'],
+              icons = ['globe','body-text','bar-chart-fill', 'gear', 'currency-exchange' ,'option'],
               menu_icon = "cast",
               default_index = 0
             )
@@ -790,85 +793,189 @@ if choice == 'Login':
 
             ###################################################################
 
-          if selected_option == "Open Interest":
-              st.write(tday)
-              df = fnodata(tday)
-              option = lc.selectbox(
-                      'Symbol',
-                      df['SYMBOL'].unique())
-
-              option_exp = mc.selectbox(
-                      'Expiry DATE',
-                      df['EXPIRY_DT'].unique())
-
-              option_inst = rc.selectbox(
-                      'INSTRUMENT',
-                      df['INSTRUMENT'].unique()) 
-
-              #Getting CMP
-              gcmp = get_cmp(df, option)
-
-              # Graph data as per user choice    
-              filterdata = filtered_data(df, option, option_exp, option_inst, gcmp)
-
-                  
-                  #md_results = f"**{option}** Futures LTP **{gcmp}**"
-                  #st.markdown(md_results)
-                  #lc.markdown(f"<h4 style='text-align: center; color: white; background-color:SlateBlue'>{md_results}</h4>", unsafe_allow_html=True)
-                  #st.write("Current Future Price" + gcmp)
-
+          if selected_option == "Derivatives Data":
               
-              bb1 = lc.button("Generate OI Graphs")
-
-              if bb1:
-                  gcmp = round(gcmp/50)*50
-                  #st.write(gcmp)
-                  dfce = filterdata[filterdata['OPTION_TYP']=="CE"]
-                  dfpe = filterdata[filterdata['OPTION_TYP']=="PE"]
-                  #st.write(dfce)
-                  #st.write(dfpe)
-                  strikelist = dfpe['STRIKE_PR'].tolist()
-                  pelist_oi = dfpe['OPEN_INT'].tolist()
-                  celist_oi = dfce["OPEN_INT"].tolist()
-                  
-                  oic_chart_js = oi_premium_bar_js(strikelist, celist_oi, pelist_oi, gcmp, titlegraph = "Open Interest")
-
-                  st_echarts(
-                                options=oic_chart_js, height="400px",
-                            )
+              df = fnodata(tday)
 
 
-                  pelist_coi = dfpe['CHG_IN_OI'].tolist()
-                  celist_coi = dfce["CHG_IN_OI"].tolist()
-                  oicoi_chart_js = oi_premium_bar_js(strikelist, celist_coi, pelist_coi, gcmp, titlegraph = "Change in OI")
+              selected4 = option_menu("", ["Option OI", "Future OI", "PCR", "Max Pain"], 
+              icons=['collection', 'activity', 'speedometer', 'chevron-bar-contract'], 
+              menu_icon="graph-up-arrow", default_index=1, orientation = "horizontal")
 
-                  st_echarts(
-                                options=oicoi_chart_js, height="400px",
-                            )
-                            
-                  #oi_chart = oi_chart_graph(filterdata)
 
-                  #coi_chart = coi_chart_graph(filterdata)
 
-                  pcr = pcr_cal(df, option, option_exp, option_inst)
-                  pcrgraph = pcr_gauge_graph(pcr/2*100)
+              if selected4 == "Option OI":
+                st.write(tday)
+                left, right = st.columns(2)
+                option = left.selectbox(
+                        'Symbol',
+                        df['SYMBOL'].unique())
 
-                  # Plotting OI Graph
-                  
-                  #st.plotly_chart(oi_chart)
+                option_exp = right.selectbox(
+                        'Expiry DATE',
+                        df['EXPIRY_DT'].unique())
 
-                  # Plotting OI Change Graph
-                  
-                  #st.plotly_chart(coi_chart)
-                  md_results = f"**PCR for {option} **{round(pcr, 2)}"
-                  st.markdown(md_results)
+                option_inst = "OPTIDX"
 
-                  st_echarts(
-                                options=pcrgraph, height="400px",
-                            )
-                  
-                  #st.markdown(f"<h4 style='text-align: center; color: white; background-color:SlateBlue'>{pcr}</h4>", unsafe_allow_html=True)
+                #Getting CMP
+                gcmp = get_cmp(df, option)
+
+                # Graph data as per user choice    
+                filterdata = filtered_data(df, option, option_exp, option_inst, gcmp)
+
+                    
+                    #md_results = f"**{option}** Futures LTP **{gcmp}**"
+                    #st.markdown(md_results)
+                    #lc.markdown(f"<h4 style='text-align: center; color: white; background-color:SlateBlue'>{md_results}</h4>", unsafe_allow_html=True)
+                    #st.write("Current Future Price" + gcmp)
+
+                
+                bb1 = st.button("Generate OI Graphs")
+
+                if bb1:
+                    gcmp = round(gcmp/50)*50
+                    #st.write(gcmp)
+                    dfce = filterdata[filterdata['OPTION_TYP']=="CE"]
+                    dfpe = filterdata[filterdata['OPTION_TYP']=="PE"]
+                    #st.write(dfce)
+                    #st.write(dfpe)
+                    strikelist = dfpe['STRIKE_PR'].tolist()
+                    pelist_oi = dfpe['OPEN_INT'].tolist()
+                    celist_oi = dfce["OPEN_INT"].tolist()
+                    
+                    oic_chart_js = oi_premium_bar_js(strikelist, celist_oi, pelist_oi, gcmp, titlegraph = "Open Interest")
+
+                    st_echarts(
+                                  options=oic_chart_js, height="400px",
+                              )
+
+
+                    pelist_coi = dfpe['CHG_IN_OI'].tolist()
+                    celist_coi = dfce["CHG_IN_OI"].tolist()
+                    oicoi_chart_js = oi_premium_bar_js(strikelist, celist_coi, pelist_coi, gcmp, titlegraph = "Change in OI")
+
+                    st_echarts(
+                                  options=oicoi_chart_js, height="400px",
+                              )
+                              
+                    #oi_chart = oi_chart_graph(filterdata)
+
+                    #coi_chart = coi_chart_graph(filterdata)
+
+                    pcr = pcr_cal(df, option, option_exp, option_inst)
+                    pcrgraph = pcr_gauge_graph(pcr/2*100)
+
+                    # Plotting OI Graph
+                    
+                    #st.plotly_chart(oi_chart)
+
+                    # Plotting OI Change Graph
+                    
+                    #st.plotly_chart(coi_chart)
+                    md_results = f"**PCR for {option} **{round(pcr, 2)}"
+                    st.markdown(md_results)
+
+                    st_echarts(
+                                  options=pcrgraph, height="400px",
+                              )
+                    
+                    #st.markdown(f"<h4 style='text-align: center; color: white; background-color:SlateBlue'>{pcr}</h4>", unsafe_allow_html=True)
                   #st.write(pcr)
+
+              if selected4 == "Max Pain":
+                  max_pain_graph = maxxpain (strikelist, celist_oi, pelist_oi)
+
+
+                  st_echarts(
+                                options=max_pain_graph, height="400px",
+                            )
+
+              if selected4 == "Future OI": 
+                  
+                               
+                  data1 = fnodata(tday)
+                  option = st.selectbox(
+                        'Symbol',
+                        df['SYMBOL'].unique())
+
+                  st.write(tday)      
+ 
+                  left, right = st.columns(2)
+                  #dftrynifty = fetch_investingcom('Nifty 50', 'india')
+                  #niftycmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']        
+
+                  filterdata = filtered_data_future(data1, option, "FUTIDX")
+
+                  # Hang Sang
+                  
+                  futoi_current = filterdata.iloc[len(filterdata)-3]['CHG_IN_OI']
+                  fut_oi_current_pc_1 = (filterdata.iloc[len(filterdata)-3]['CHG_IN_OI']) / (filterdata.iloc[len(filterdata)-3]['OPEN_INT'])
+                  fut_oi_current_pc = "{:.2%}".format(fut_oi_current_pc_1)
+
+
+                  futoi_next = filterdata.iloc[len(filterdata)-2]['CHG_IN_OI']
+                  fut_oi_next_pc_1 = (filterdata.iloc[len(filterdata)-2]['CHG_IN_OI']) / (filterdata.iloc[len(filterdata)-3]['OPEN_INT'])
+                  fut_oi_next_pc = "{:.2%}".format(fut_oi_next_pc_1)
+
+
+
+                  # Metrics
+                  left.metric(label="Futures (Current Month) OI Change", value=futoi_current, delta=fut_oi_current_pc)
+                  right.metric(label="Futures (Next Month) OI Change", value=futoi_next, delta=fut_oi_next_pc)
+
+                  if fut_oi_current_pc_1 and fut_oi_next_pc_1 > 0.1:
+                    st.markdown(f'<h1 style="color:#04ba65;font-size:24px;">{"Market is Bullish"}</h1>', unsafe_allow_html=True)
+                  elif fut_oi_current_pc_1 and fut_oi_next_pc_1 < -0.1:
+                    st.markdown(f'<h1 style="color:#ba0419;font-size:24px;">{"Market is Bearish"}</h1>', unsafe_allow_html=True)
+                  else:
+                    st.markdown(f'<h1 style="color:#d1c300;font-size:24px;">{"Market is Sideways"}</h1>', unsafe_allow_html=True)
+
+
+                  # start_date = date(2022, 2, 10)
+                  # end_date = date(2022, 2, 18)
+
+                  start_date = tday - timedelta(days=10)
+                  end_date = tday - timedelta(days=1)
+                  delta = timedelta(days=1)
+                  rowsdata = []
+
+                  while start_date <= end_date:
+                      if start_date.weekday() >= 1 and start_date.weekday() <= 4:
+                        data2 = fnodata(start_date)
+                        filterdata = filtered_data_future(data2, option, "FUTIDX")
+                        futoi_current = filterdata.iloc[len(filterdata)-3]['CHG_IN_OI']
+                        fut_oi_current_pc_1 = (filterdata.iloc[len(filterdata)-3]['CHG_IN_OI']) / (filterdata.iloc[len(filterdata)-3]['OPEN_INT'])*100
+                        futoi_next = filterdata.iloc[len(filterdata)-2]['CHG_IN_OI']
+                        fut_oi_next_pc_1 = (filterdata.iloc[len(filterdata)-2]['CHG_IN_OI']) / (filterdata.iloc[len(filterdata)-3]['OPEN_INT'])*100
+                        rowsdata.append([start_date, fut_oi_current_pc_1, fut_oi_next_pc_1])    
+                        #print(start_date)
+                      start_date += delta
+                  df = pd.DataFrame(rowsdata, columns=["Date", "Change in Current Month Future OI (%)", "Change in Next Month Future OI (%)"])
+                  # plot1 = df.plot()
+                  # fig = px.line(        
+                  #               df, #Data Frame
+                  #               x = "Date", #Columns from the data frame
+                  #               y = "Change in Current Month Future OI (%)",
+                  #               title = "Percentage Change in Future OI"
+                  #           )
+                  # fig.update_traces(line_color = "maroon")
+                  # st.plotly_chart(fig) 
+
+
+                  datelist1 = df["Date"].tolist()
+                  datelist = [date_obj.strftime('%Y%m%d') for date_obj in datelist1]
+                  currlist = df["Change in Current Month Future OI (%)"].tolist()
+                  nextlist = df["Change in Next Month Future OI (%)"].tolist()
+                    
+                  futurechart_js = futureoigraph_hist(datelist, currlist, nextlist)
+
+                  st_echarts(
+                                options=futurechart_js, height="400px",
+                            )
+                  
+                  #st.write(df) 
+                  
+                  #st.write(filterdata)
 
 
           #####################################################################################################3
