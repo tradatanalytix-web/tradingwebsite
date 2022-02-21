@@ -157,7 +157,7 @@ if choice == 'Login':
           title_input.empty()
           choicebox.empty()
           logincheck.empty()
-          paymentimage.empty()
+          #paymentimage.empty()
           # email.empty()
           # password.empty()
 
