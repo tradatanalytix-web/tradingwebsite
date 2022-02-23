@@ -20,5 +20,6 @@ streamlit_autorefresh
 investpy
 fastquant
 fbprophet
+simplejson==3.8.1
 
 
