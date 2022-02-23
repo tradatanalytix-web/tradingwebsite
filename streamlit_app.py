@@ -67,6 +67,7 @@ from filterdatafuture import filtered_data_future
 from futureoigraph import futureoigraph_hist
 from pcrchart_h import pcrchart_hist
 from candlestick_chart import candlestick_chart_display
+from prophetforecastml import prophet_forecast_graph
 
 logo_top = Image.open("./tradatanalytix logo.png")
 
@@ -802,27 +803,38 @@ if choice == 'Login':
                 rc.metric(label="Hang Sang - Hong Kong", value=hancmp, delta=hanchangepc)
               
               if selected_globalmarkets == "Charts":
+                  df = pd.read_csv(".\globalindices_sym.csv")
+                  #df.head()
+                  #st.write(df)
                   select_option = st.selectbox(
                                         'Choose Global Index',
-                                        ('Nifty 50', 'Nikkei 225', 'Hang Seng'))
+                                        ('Nifty 50', 'Dow 30', 'FTSE 100' , 'CAC 40', 'DAX' ,'Nikkei 225', 'Hang Seng'))
 
-                  if select_option == "Nifty 50":
-                    dftrynifty = fetch_investingcom('Nifty 50', 'india')
-                    #st.write(dftrynifty)
-                    dateobj22 = list(dftrynifty.index.values)
-                    #st.write(datelist)
-                    
-                    datelist = [str(x) for x in dateobj22]
+                  df = df.loc[(df['symbol'] == select_option)]
+                  country = df.iloc[0]['country']
+                  sym_yahoo = df.iloc[0]['yahoofin']
 
-                    dfohlc = dftrynifty[["Close", "Open", "Low", "High"]]
-                    #st.write(dfohlc)
-                    ohlclist = dfohlc.to_numpy().tolist()
-                    #st.write(ohlclist)
-                    printcandlechart = candlestick_chart_display(datelist, ohlclist)
+                  dftrynifty = fetch_investingcom(select_option, country)
+                  #st.write(country)
+                  #st.write(sym_yahoo)
+                  #st.write(dftrynifty)
+                  dateobj22 = list(dftrynifty.index.values)
+                  #st.write(datelist)
+                  
+                  datelist = [str(x) for x in dateobj22]
 
-                    st_echarts(
-                                  options=printcandlechart, height = "400px"
-                              )
+                  dfohlc = dftrynifty[["Close", "Open", "Low", "High"]]
+                  #st.write(dfohlc)
+                  ohlclist = dfohlc.to_numpy().tolist()
+                  #st.write(ohlclist)
+                  printcandlechart = candlestick_chart_display(datelist, ohlclist)
+
+                  st_echarts(
+                                options=printcandlechart, height = "400px"
+                            )
+
+                  prof_forecast =  prophet_forecast_graph(sym_yahoo)
+                  st.pyplot(prof_forecast)          
 
 
                     
