@@ -833,8 +833,8 @@ if choice == 'Login':
                                 options=printcandlechart, height = "400px"
                             )
 
-                  prof_forecast =  prophet_forecast_graph(sym_yahoo)
-                  st.pyplot(prof_forecast)          
+                  #prof_forecast =  prophet_forecast_graph(sym_yahoo)
+                  #st.pyplot(prof_forecast)          
 
 
                     
