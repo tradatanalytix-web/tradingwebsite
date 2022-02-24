@@ -67,7 +67,7 @@ from filterdatafuture import filtered_data_future
 from futureoigraph import futureoigraph_hist
 from pcrchart_h import pcrchart_hist
 from candlestick_chart import candlestick_chart_display
-#from prophetforecastml import prophet_forecast_graph
+from prophetforecastml import prophet_forecast_graph
 
 logo_top = Image.open("./tradatanalytix logo.png")
 
@@ -833,8 +833,8 @@ if choice == 'Login':
                                 options=printcandlechart, height = "400px"
                             )
 
-                  #prof_forecast =  prophet_forecast_graph(sym_yahoo)
-                  #st.pyplot(prof_forecast)          
+                  prof_forecast =  prophet_forecast_graph(sym_yahoo)
+                  st.pyplot(prof_forecast)          
 
 
                     
