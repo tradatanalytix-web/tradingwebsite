@@ -803,7 +803,7 @@ if choice == 'Login':
                 rc.metric(label="Hang Sang - Hong Kong", value=hancmp, delta=hanchangepc)
               
               if selected_globalmarkets == "Charts":
-                  df = pd.read_csv(".\globalindices_sym.csv")
+                  df = pd.read_csv("./globalindices_sym.csv")
                   #df.head()
                   #st.write(df)
                   select_option = st.selectbox(
