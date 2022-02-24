@@ -11,7 +11,7 @@ from datetime import date, datetime
 from Myround import myround
 from fetchdata_investingcom import fetch_investingcom
 from fnodataupdate import fnodata
-import SessionState
+#import SessionState
 from filterdata_fun import filtered_data
 from oichart_fun import oi_chart_graph
 from coichart_fun import coi_chart_graph
@@ -247,12 +247,12 @@ if choice == 'Login':
 
 
 
-          session_state = SessionState.get(
-              button1_clicked=False,
-              button2_clicked=False,
-              button3_clicked=False,
-              home_button = False
-          )
+          # session_state = SessionState.get(
+          #     button1_clicked=False,
+          #     button2_clicked=False,
+          #     button3_clicked=False,
+          #     home_button = False
+          # )
 
           tday = st.sidebar.date_input('Date Input')
           previous_Date = tday - timedelta(days = 180)
