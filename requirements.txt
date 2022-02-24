@@ -19,6 +19,6 @@ streamlit-echarts
 streamlit_autorefresh
 investpy
 pystan==2.19.1.1
-fbprophet
+fbprophet==0.7.1
 
 
