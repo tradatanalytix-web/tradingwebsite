@@ -68,6 +68,8 @@ from futureoigraph import futureoigraph_hist
 from pcrchart_h import pcrchart_hist
 from candlestick_chart import candlestick_chart_display
 #from prophetforecastml import prophet_forecast_graph
+from supertrend_optimal import suptrend_cal
+import datetime
 
 logo_top = Image.open("./tradatanalytix logo.png")
 
@@ -748,9 +750,12 @@ if choice == 'Login':
               icons=['collection', 'bank2'], 
               menu_icon="graph-up-arrow", default_index=0, orientation = "horizontal")
 
+
+
               # Get CMPS
 
               if selected_globalmarkets == "Dashboard":
+                
                 lc, mc, rc = st.columns(3)
 
                 #NIFTY 50
@@ -801,6 +806,9 @@ if choice == 'Login':
                 lc.metric(label="CAC 40 - France", value=caccmp, delta=cacchangepc)
                 mc.metric(label="Nikkei 225 - Japan", value=nikcmp, delta=nikchangepc)
                 rc.metric(label="Hang Sang - Hong Kong", value=hancmp, delta=hanchangepc)
+
+
+                
               
               if selected_globalmarkets == "Charts":
                   df = pd.read_csv("./globalindices_sym.csv")
@@ -1195,92 +1203,131 @@ if choice == 'Login':
           ########################################################################################################3
 
           if selected_option == "Trading Strategy":
-                  c1, c2, c3, c4 = st.columns(4)
 
-                  #df = fnodata(tday)
-                  #gcmp_2 = get_cmp(df,"NIFTY")
-                  #price = myround(gcmp_2)
+                  selected5 = option_menu("", ["Equity/Cash", "Futures" ,"Options"], 
+                              icons=['cash-coin', 'bar-chart' ,'alt'], 
+                              menu_icon="basket", default_index=0, orientation = "horizontal")
+                              #selected2
 
-                  obj = OptionStrat('Butterfly Spread', 100, {'start': 85, 'stop':115,'by':1})
-                  obj.long_call(90,2, 1)
-                  obj.long_put(90,2,1)
-                  op_strikelist = obj.STs.tolist()
-                  op_payofflist = obj.payoffs.tolist()
-                  maxprofit = max(op_payofflist)
-                  #st.write(op_strikelist[0])
-                  #st.write(op_payofflist)
-                  fig = optionspayoff_diagram(op_strikelist, op_payofflist, maxprofit) 
+                  if selected5 == "Equity/Cash":
+                    options_atrpdselect = st.multiselect(
+                                            'ATR period values you want to consider?',
+                                            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                                            [6, 7, 8, 9, 10])
 
-                  st_echarts(
-                              options=fig, height="400px",
-                            )
-               
+                    options_atrmultselect = st.multiselect(
+                                            'ATR Multiplier values you want to consider?',
+                                            [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0],
+                                            [1.0, 1.5, 2.0, 2.5, 3.0])
+                    
+                    option_sym_suptr = st.selectbox(
+                                          'Select Stock for which you want to find best Supertrend Setting',
+                                          ('SBIN.NS', 'HDFCBANK.NS', 'CIPLA.NS'))
+
+
+                    d = st.date_input(
+                                      "Backtest Start Date",
+                                      datetime.date(2019, 7, 6))
+
+
+                    trading_capital = st.slider('How much capital do you want to deploy to trade this strategy?', 2000, 100000, 25000, 1000)                  
+
+
+                    if st.button('Find Optimal Settings for trade'):                                        
+                       with st.spinner('Wait for it...finding the best setting'): 
+                          df = yf.download(option_sym_suptr, start=d, interval = "1D")
+                          sptrcal = suptrend_cal(df, options_atrpdselect, options_atrmultselect, trading_capital)
+                          st.header("")
+                          st.info(sptrcal)
+                        
                   
+                  if selected5 == "Options":
+                    c1, c2, c3, c4 = st.columns(4)
 
-                  # SYMBOL price
-                  #spot_price = myround(gcmp_2)
+                    #df = fnodata(tday)
+                    #gcmp_2 = get_cmp(df,"NIFTY")
+                    #price = myround(gcmp_2)
 
-                  # Long call
-                  strike_price_long_call = c2.number_input(value = (100 + 200),label = "OTM Strike CE - BUY")
-                  premium_long_call = c2.number_input(label = "Price for CE Long")
+                    obj = OptionStrat('Butterfly Spread', 100, {'start': 85, 'stop':115,'by':1})
+                    obj.long_call(90,2, 1)
+                    obj.long_put(90,2,1)
+                    op_strikelist = obj.STs.tolist()
+                    op_payofflist = obj.payoffs.tolist()
+                    maxprofit = max(op_payofflist)
+                    #st.write(op_strikelist[0])
+                    #st.write(op_payofflist)
+                    fig = optionspayoff_diagram(op_strikelist, op_payofflist, maxprofit) 
 
-                  # Short call
-                  strike_price_short_call = c1.number_input(value = 199, label = "ATM Strike CE - SELL")
-                  premium_short_call = c1.number_input(label="Price for CE Short")
+                    st_echarts(
+                                options=fig, height="400px",
+                              )
+                
+                    
 
-                  # Long put
-                  strike_price_long_put = c4.number_input(value = (100 + 200), label = "OTM Strike PE - BUY") 
-                  premium_long_put = c4.number_input(label = "Price for PE Long")
+                    # SYMBOL price
+                    #spot_price = myround(gcmp_2)
 
-                  # Short put
-                  strike_price_short_put = c3.number_input(value = 100, label = "ATM Strike PE - SELL") 
-                  premium_short_put = c3.number_input(label = "Price for PE Short")
+                    # Long call
+                    strike_price_long_call = c2.number_input(value = (100 + 200),label = "OTM Strike CE - BUY")
+                    premium_long_call = c2.number_input(label = "Price for CE Long")
 
+                    # Short call
+                    strike_price_short_call = c1.number_input(value = 199, label = "ATM Strike CE - SELL")
+                    premium_short_call = c1.number_input(label="Price for CE Short")
 
-                  # Stock price range at expiration of the call
-                  sT = np.arange(0.92*spot_price, 1.08*spot_price, 1)    
+                    # Long put
+                    strike_price_long_put = c4.number_input(value = (100 + 200), label = "OTM Strike PE - BUY") 
+                    premium_long_put = c4.number_input(label = "Price for PE Long")
 
-                  bb3 = c1.button("Get Strategy Graph")
-
-                  if bb3:
-                      
-
-                      payoff_long_put = put_payoff(sT, strike_price_long_put, premium_long_put)
-                      payoff_short_put = put_payoff(sT, strike_price_short_put, premium_short_put) * -1.0
-                      payoff_long_call = call_payoff(sT, strike_price_long_call, premium_long_call)
-                      payoff_short_call = call_payoff(sT, strike_price_short_call, premium_short_call) * -1.0
-                      options_chart = payoff_long_call + payoff_long_put + payoff_short_call + payoff_short_put
-
-                      md_results_profit = f"**Max Profit **{round(max(options_chart)*50)}"
-                      st.markdown(md_results_profit)
-                      md_results_loss = f"**Max loss **{round(min(options_chart)*50)}"
-                      st.markdown(md_results_loss)            
-                      #print("Max Profit:", max(options_chart))
-                      #print("Max Loss:", min(options_chart))
-
-                      # Plot
-                      fig, ax = plt.subplots(figsize=(8, 5))
-                      ax.spines['bottom'].set_position('zero')
-                      #ax.plot(sT, payoff_long_call, '--', label='Long 920 Strike Call', color='g')
-                      #ax.plot(sT, payoff_short_call, '--', label='Short 940 Strike Call ', color='r')
-                      ax.plot(sT, options_chart, label='Iron Butterly Payoff')
-                      plt.xlabel('Price')
-                      plt.ylabel('Profit and loss')
-                      #plt.axhline(y = 0, color = 'r', linestyle = '-')
-                      plt.axhline(y = 0, color = 'r', linestyle = 'dashed')
-                      plt.legend()
-                      st.pyplot(fig)
-                      
-                      #fig.add_hline(y=0)
-                      st.plotly_chart(fig)
-
-                      #fig2 = py.plot_mpl(fig)
-                      #fig2.add_hline(y=0)
-                      #st.plotly_chart(fig2)
+                    # Short put
+                    strike_price_short_put = c3.number_input(value = 100, label = "ATM Strike PE - SELL") 
+                    premium_short_put = c3.number_input(label = "Price for PE Short")
 
 
-                      #fig2 = ironbutterfly(options_chart, sT)
-                      #st.plotly_chart(fig2)
+                    # Stock price range at expiration of the call
+                    sT = np.arange(0.92*spot_price, 1.08*spot_price, 1)    
+
+                    bb3 = c1.button("Get Strategy Graph")
+
+                    if bb3:
+                        
+
+                        payoff_long_put = put_payoff(sT, strike_price_long_put, premium_long_put)
+                        payoff_short_put = put_payoff(sT, strike_price_short_put, premium_short_put) * -1.0
+                        payoff_long_call = call_payoff(sT, strike_price_long_call, premium_long_call)
+                        payoff_short_call = call_payoff(sT, strike_price_short_call, premium_short_call) * -1.0
+                        options_chart = payoff_long_call + payoff_long_put + payoff_short_call + payoff_short_put
+
+                        md_results_profit = f"**Max Profit **{round(max(options_chart)*50)}"
+                        st.markdown(md_results_profit)
+                        md_results_loss = f"**Max loss **{round(min(options_chart)*50)}"
+                        st.markdown(md_results_loss)            
+                        #print("Max Profit:", max(options_chart))
+                        #print("Max Loss:", min(options_chart))
+
+                        # Plot
+                        fig, ax = plt.subplots(figsize=(8, 5))
+                        ax.spines['bottom'].set_position('zero')
+                        #ax.plot(sT, payoff_long_call, '--', label='Long 920 Strike Call', color='g')
+                        #ax.plot(sT, payoff_short_call, '--', label='Short 940 Strike Call ', color='r')
+                        ax.plot(sT, options_chart, label='Iron Butterly Payoff')
+                        plt.xlabel('Price')
+                        plt.ylabel('Profit and loss')
+                        #plt.axhline(y = 0, color = 'r', linestyle = '-')
+                        plt.axhline(y = 0, color = 'r', linestyle = 'dashed')
+                        plt.legend()
+                        st.pyplot(fig)
+                        
+                        #fig.add_hline(y=0)
+                        st.plotly_chart(fig)
+
+                        #fig2 = py.plot_mpl(fig)
+                        #fig2.add_hline(y=0)
+                        #st.plotly_chart(fig2)
+
+
+                        #fig2 = ironbutterfly(options_chart, sT)
+                        #st.plotly_chart(fig2)
 
           streamlit_analytics.stop_tracking()
 
