@@ -18,5 +18,7 @@ hydralit_components
 streamlit-echarts
 streamlit_autorefresh
 investpy
+pytz
+streamlit_analytics
 
 
