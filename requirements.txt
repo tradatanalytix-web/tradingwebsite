@@ -20,5 +20,7 @@ streamlit_autorefresh
 investpy
 pytz
 streamlit_analytics
+SQLAlchemy
+
 
 
