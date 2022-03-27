@@ -21,6 +21,7 @@ investpy
 pytz
 streamlit_analytics
 SQLAlchemy
+psycopg2
 
 
 
