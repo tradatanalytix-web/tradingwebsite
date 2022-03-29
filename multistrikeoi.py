@@ -1,7 +1,7 @@
 from streamlit_echarts import st_echarts
 
 
-def multistrikeoi_graph (datelist, atmce, atmpe, itmce, itmpe, otmce, otmpe):
+def multistrikeoi_graph (datelist, atmce, atmpe, itmce, itmpe, otmce, otmpe, t1, t2, t3, t4, t5, t6):
     option = {
                 "title": {
                     "text": 'OI'
@@ -10,7 +10,7 @@ def multistrikeoi_graph (datelist, atmce, atmpe, itmce, itmpe, otmce, otmpe):
                     "trigger": 'axis'
                 },
                 "legend": {
-                    "data": ['17200 CE', '17200 PE', '17100 CE', '17300 PE', '17300 CE', '17100 PE']
+                    "data": [t1, t2, t3, t4, t5, t6]
                 },
                 "grid": {
                     "left": '3%',
@@ -33,32 +33,32 @@ def multistrikeoi_graph (datelist, atmce, atmpe, itmce, itmpe, otmce, otmpe):
                 },
                 "series": [
                     {
-                    "name": '17200 CE',
+                    "name": t1,
                     "type": 'line',
                     "data": atmce
                     },
                     {
-                    "name": '17200 PE',
+                    "name": t2,
                     "type": 'line',
                     "data": atmpe
                     },
                     {
-                    "name": '17100 CE',
+                    "name": t3,
                     "type": 'line',
                     "data": itmce
                     },
                     {
-                    "name": '17300 PE',
+                    "name": t4,
                     "type": 'line',
                     "data": itmpe
                     },
                     {
-                    "name": '17300 CE',
+                    "name": t5,
                     "type": 'line',
                     "data": otmce
                     },
                     {
-                    "name": '17100 PE',
+                    "name": t6,
                     "type": 'line',
                     "data": otmpe
                     }

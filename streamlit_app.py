@@ -278,7 +278,7 @@ holidays_dates = ["2022-03-18", "2022-01-26"]
 current_time = datetime.datetime.now(pytz.timezone('Asia/Kolkata'))
 timetrack = current_time.hour
 
-if timetrack <= 21 and timetrack >= 9:
+if timetrack <= 20 and timetrack >= 9:
   tday = date.today() - datetime.timedelta(days=1)
 else:
   tday = date.today()
@@ -653,6 +653,16 @@ if selected_option == "Open Interest Data":
     icons=['collection','collection', 'bank2'], 
     menu_icon="graph-up-arrow", default_index=0, orientation = "horizontal")
     #selected2
+    
+    dftrynifty = fetch_investingcom('Nifty 50', 'india')
+    niftyspot_price = dftrynifty.iloc[len(dftrynifty)-1]['Close']
+
+    t1 = str(int(np.round(niftyspot_price/100,0)*100)) + "CE"
+    t2 = str(int(np.round(niftyspot_price/100,0)*100)) + "PE"
+    t3 = str(int(np.round(niftyspot_price/100,0)*100) - 100) + "CE"
+    t4 = str(int(np.round(niftyspot_price/100,0)*100) + 100) + "PE"
+    t5 = str(int(np.round(niftyspot_price/100,0)*100) + 100) + "CE"
+    t6 = str(int(np.round(niftyspot_price/100,0)*100) - 100) + "PE"
 
     if selected3 == "Multi Strike OI":
       st_autorefresh(interval=3 * 60 * 1000, key="dataframerefresh")
@@ -687,7 +697,8 @@ if selected_option == "Open Interest Data":
                                                 itmcelist, 
                                                 itmpelist,
                                                 otmcelist,
-                                                otmpelist)
+                                                otmpelist,
+                                                t1, t2, t3, t4, t5, t6)
 
         st_echarts(
                       options=multioic_chart_js, 
