@@ -278,7 +278,7 @@ holidays_dates = ["2022-03-18", "2022-01-26"]
 current_time = datetime.datetime.now(pytz.timezone('Asia/Kolkata'))
 timetrack = current_time.hour
 
-if timetrack <= 20 and timetrack >= 9:
+if timetrack <= 20:
   tday = date.today() - datetime.timedelta(days=1)
 else:
   tday = date.today()
