@@ -74,6 +74,7 @@ from multistrikeoi import multistrikeoi_graph
 from fetchdata_investingcom_hist import fetch_investingcom_hist
 import pytz
 from sqlalchemy import create_engine
+from globaldashboard import globaldashboard_metric
 
 
 
@@ -82,14 +83,14 @@ logo_top = Image.open("./tradatanalytix logo.png")
 st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon=logo_top)
 
 
-hide_menu_style = """
-  <style>
-  #MainMenu {visibility: hidden; }
-  footer {visibility: hidden;}
-  </style>
-"""
+# hide_menu_style = """
+#   <style>
+#   #MainMenu {visibility: hidden; }
+#   footer {visibility: hidden;}
+#   </style>
+# """
 
-st.markdown(hide_menu_style, unsafe_allow_html=True)
+# st.markdown(hide_menu_style, unsafe_allow_html=True)
 
 
 # # Configuration Key
@@ -635,7 +636,7 @@ if selected_option == "Open Interest Data":
     #left, middle, right = st.columns(3)
     symbol = 'NIFTY50'
 
-    exp_date = '31-mar-2022'
+    exp_date = '07-apr-2022'
 
     autorefresh_time = 3
     #rainbow = ['15050', '15550', '16050', '16550', '17050', '17550', '18050', '18550']
@@ -837,7 +838,7 @@ if selected_option == "Open Interest Data":
 if selected_option == "Global Markets":
 
     # horizontal menu
-    selected_globalmarkets = option_menu("Global Cues:", ["Dashboard", "Charts"], 
+    selected_globalmarkets = option_menu("", ["Dashboard", "Charts"], 
     icons=['collection', 'bank2'], 
     menu_icon="graph-up-arrow", default_index=0, orientation = "horizontal")
 
@@ -890,6 +891,17 @@ if selected_option == "Global Markets":
 
 
 
+      # FTSE
+
+      ftse_index = globaldashboard_metric('FTSE 100', 'united kingdom')
+      #strait_index = globaldashboard_metric('STI', 'singapore')
+      kospi_index = globaldashboard_metric('KOSPI', 'south korea')
+      nasdaq_index = globaldashboard_metric('NASDAQ', 'united states')
+
+
+
+
+
       # Metrics
       lc.metric(label="Nifty 50 - India", value=niftycmp, delta=niftychangepc)
       mc.metric(label="DAX - Germany", value=daxcmp, delta=daxchangepc)
@@ -897,6 +909,9 @@ if selected_option == "Global Markets":
       lc.metric(label="CAC 40 - France", value=caccmp, delta=cacchangepc)
       mc.metric(label="Nikkei 225 - Japan", value=nikcmp, delta=nikchangepc)
       rc.metric(label="Hang Sang - Hong Kong", value=hancmp, delta=hanchangepc)
+      lc.metric(label="FTSE - UK", value=ftse_index[0], delta=ftse_index[1])
+      mc.metric(label="NASDAQ - US", value=nasdaq_index[0], delta=nasdaq_index[1])
+      rc.metric(label="KOSPI - South Korea", value=kospi_index[0], delta=kospi_index[1])
 
 
       
