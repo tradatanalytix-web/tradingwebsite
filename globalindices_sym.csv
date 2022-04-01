@@ -6,3 +6,5 @@ CAC 40,CAC 40,^FCHI,france
 Nikkei 225,Nikkei 225,^N225,Japan
 Hang Seng,Hang Seng,^HSI,Hong Kong
 FTSE 100,FTSE100,^FTSE,united kingdom
+KOSPI,KOSPI,^KOSPI,south korea
+NASDAQ,NASDAQ,^NASDAQ,united states
