@@ -79,6 +79,7 @@ from globaldashboard import globaldashboard_metric
 from globaldf import *
 from globalcharts_summary import global_graph
 from simplelinechart_js import linechart_js
+from sectorchart import sector_graph
 
 
 
@@ -1312,178 +1313,463 @@ if selected_option == "FII/DII Data":
 #########################################################################################################
 
 if selected_option == "Pick Outperformers":
-    df_nifty = yf.download('^NSEI', interval="1d", start=previous_Date, end=tday)
-    df_nifty['Date'] = pd.to_datetime(df_nifty.index)
-    df_nifty['Date'] = df_nifty['Date'].apply(mpl_dates.date2num)
 
-    df_nifty = df_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+    selected6 = option_menu("", ["Relative Strength", "Pct Change in RS"], orientation="horizontal")
 
 
-    df_banknifty = yf.download('^NSEBANK', interval="1d", start=previous_Date, end=tday)
-    df_banknifty['Date'] = pd.to_datetime(df_banknifty.index)
-    df_banknifty['Date'] = df_banknifty['Date'].apply(mpl_dates.date2num)
-
-    df_banknifty = df_banknifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-
-    rsdata_bank = pd.merge(df_nifty, df_banknifty, left_index=True, right_index=True)
-
-    rsdata_bank['Relative Strength'] = rsdata_bank["Close_y"]/rsdata_bank["Close_x"]
-    df_bank = rsdata_bank[['Date_x', 'Relative Strength']]
-    fig_bank = px.line(df_bank, y='Relative Strength', title='Relative Strength - Bank Nifty')
-    st.plotly_chart(fig_bank)
+    if selected6 == "Relative Strength":
 
 
-    rsbank_list = df_bank["Relative Strength"].tolist()
-    datebank_list = df_bank["Date_x"].tolist()
 
-    # option = {
-    #               "xAxis": {
-    #                   "type": "category",
-    #                   "data": datebank_list,
-    #               },
-    #               "yAxis": {"type": "value"},
-    #               "series": [{"data": rsbank_list, "type": "line"}],
-    #           }
+      df_nifty = yf.download('^NSEI', interval="1d", start=previous_Date, end=tday)
+      df_nifty['Date'] = pd.to_datetime(df_nifty.index)
+      df_nifty['Date'] = df_nifty['Date'].apply(mpl_dates.date2num)
 
-    # option = oi_premium_bar_js()
+      df_nifty = df_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
 
-    # st_echarts(
-    #                 options=option, height="400px",
-    #             )
 
+      df_banknifty = yf.download('^NSEBANK', interval="1d", start=previous_Date, end=tday)
+      df_banknifty['Date'] = pd.to_datetime(df_banknifty.index)
+      df_banknifty['Date'] = df_banknifty['Date'].apply(mpl_dates.date2num)
+
+      df_banknifty = df_banknifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+      rsdata_bank = pd.merge(df_nifty, df_banknifty, left_index=True, right_index=True)
+
+      rsdata_bank['Relative Strength'] = rsdata_bank["Close_y"]/rsdata_bank["Close_x"]
+
+      rs_df = pd.DataFrame()
+      rs_df["Date"] = df_nifty['Date']
+      rs_df["bank"] = rsdata_bank['Relative Strength'].pct_change()
+      df_bank = rsdata_bank[['Date_x', 'Relative Strength']]
+      fig_bank = px.line(df_bank, y='Relative Strength', title='Relative Strength - Bank Nifty')
+      st.plotly_chart(fig_bank)
+
+
+      rsbank_list = df_bank["Relative Strength"].tolist()
+      datebank_list = df_bank["Date_x"].tolist()
+
+      # option = {
+      #               "xAxis": {
+      #                   "type": "category",
+      #                   "data": datebank_list,
+      #               },
+      #               "yAxis": {"type": "value"},
+      #               "series": [{"data": rsbank_list, "type": "line"}],
+      #           }
+
+      # option = oi_premium_bar_js()
+
+      # st_echarts(
+      #                 options=option, height="400px",
+      #             )
+
+      
+
+      
+      df_niftyit = yf.download('^CNXIT', interval="1d", start=previous_Date, end=tday)
+      df_niftyit['Date'] = pd.to_datetime(df_niftyit.index)
+      df_niftyit['Date'] = df_niftyit['Date'].apply(mpl_dates.date2num)
+
+      df_niftyit = df_niftyit.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+      rsdata_it = pd.merge(df_nifty, df_niftyit, left_index=True, right_index=True)
+
+      rsdata_it['Relative Strength'] = rsdata_it["Close_y"]/rsdata_it["Close_x"]
+
+
+      rs_df["IT"] = rsdata_it['Relative Strength'].pct_change()
+
+      df_it = rsdata_it[['Date_x', 'Relative Strength']]
+      fig_it = px.line(df_it, y='Relative Strength', title='Relative Strength - IT')
+      st.plotly_chart(fig_it)
+
+      stringdate1 = str(tday)
+      stringdate2 = str(previous_Date)
+
+      lastconnection = datetime.datetime.strptime(stringdate1, "%Y-%m-%d").strftime("%d/%m/%Y")
+      firstconnection = datetime.datetime.strptime(stringdate2, "%Y-%m-%d").strftime("%d/%m/%Y")
+
+      #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
+      dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Pharma", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
+      dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
+      dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+
+      dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+      rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+
+      rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
+      rs_df["Pharma"] = rsdata_commodities['Relative Strength'].pct_change()
+      df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
+      fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Pharma')
+      st.plotly_chart(fig_commodities)
+
+
+      
+      #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
+      dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Auto", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
+      dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
+      dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+
+      dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+      rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+
+      rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
+      df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
+      rs_df["Auto"] = rsdata_commodities['Relative Strength'].pct_change()
+      fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Auto')
+      st.plotly_chart(fig_commodities)
+
+
+      
+      #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
+      dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Metal", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
+      dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
+      dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+
+      dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+      rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+
+      rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
+      rs_df["Metal"] = rsdata_commodities['Relative Strength'].pct_change()
+      df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
+      fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Metals')
+      st.plotly_chart(fig_commodities)
+
+
+      
+      #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
+      dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Media", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
+      dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
+      dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+
+      dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+      rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+
+      rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
+      rs_df["Media"] = rsdata_commodities['Relative Strength'].pct_change()
+      df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
+      fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Media')
+      st.plotly_chart(fig_commodities)
+
+
+          
+      #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
+      dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Realty", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
+      dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
+      dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+
+      dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+      rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+
+      rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
+      rs_df["Realty"] = rsdata_commodities['Relative Strength'].pct_change()
+      df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
+      fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Realty')
+      st.plotly_chart(fig_commodities)
+
+
+          
+      #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
+      dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty India Consumption", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
+      dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
+      dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+
+      dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+      rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+
+      rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
+      rs_df["Consumption"] = rsdata_commodities['Relative Strength'].pct_change()
+      df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
+      fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - FMCG')
+      st.plotly_chart(fig_commodities)
+
+
+      
+      #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
+      dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Infrastructure", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
+      dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
+      dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+
+      dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+      rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+
+      rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
+      rs_df["Infrastructure"] = rsdata_commodities['Relative Strength'].pct_change()
+      df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
+      fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Infrastructure')
+      st.plotly_chart(fig_commodities)
+
+      rs_df = rs_df.iloc[1: , :]
+      #rs_df.dropna()
+
+      datelist = rs_df['Date'].to_list()
+      datelist2 = [str(x) for x in datelist]
+      #datelist2 = datelist.pop(0)
+      banklist = rs_df['bank'].to_list()
+      #banklist = banklist.pop(0)
+      itlist = rs_df['IT'].to_list()
+      #itlist = itlist.pop(0)
+      autolist = rs_df['Auto'].to_list()
+      #autolist = autolist.pop(0)
+      medialist = rs_df['Media'].to_list()
+      #medialist = medialist.pop(0)
+      realtylist = rs_df['Realty'].to_list()
+      #realtylist = realtylist.pop(0)
+      consumptionlist = rs_df['Consumption'].to_list()
+      #consumptionlist = consumptionlist.pop(0)
+      infrastructuallist = rs_df['Infrastructure'].to_list()
+      #infrastructuallist = infrastructuallist.pop(0)
+      pharmalist = rs_df['Pharma'].to_list()
+      #pharmalist = pharmalist.pop(0)
+
+
+      #st.write(rs_df)
+
+
+
+
+
+      rssector_graph = sector_graph(datelist2, banklist, itlist, autolist, medialist, realtylist, consumptionlist, infrastructuallist, pharmalist)
+
+      # st_echarts(
+      #   rssector_graph, height=400
+      # )
     
 
-    
-    df_niftyit = yf.download('^CNXIT', interval="1d", start=previous_Date, end=tday)
-    df_niftyit['Date'] = pd.to_datetime(df_niftyit.index)
-    df_niftyit['Date'] = df_niftyit['Date'].apply(mpl_dates.date2num)
+    if selected6 == 'Pct Change in RS':
+        df_nifty = yf.download('^NSEI', interval="1d", start=previous_Date, end=tday)
+        df_nifty['Date'] = pd.to_datetime(df_nifty.index)
+        df_nifty['Date'] = df_nifty['Date'].apply(mpl_dates.date2num)
 
-    df_niftyit = df_niftyit.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-
-    rsdata_it = pd.merge(df_nifty, df_niftyit, left_index=True, right_index=True)
-
-    rsdata_it['Relative Strength'] = rsdata_it["Close_y"]/rsdata_it["Close_x"]
-    df_it = rsdata_it[['Date_x', 'Relative Strength']]
-    fig_it = px.line(df_it, y='Relative Strength', title='Relative Strength - IT')
-    st.plotly_chart(fig_it)
-
-    stringdate1 = str(tday)
-    stringdate2 = str(previous_Date)
-
-    lastconnection = datetime.datetime.strptime(stringdate1, "%Y-%m-%d").strftime("%d/%m/%Y")
-    firstconnection = datetime.datetime.strptime(stringdate2, "%Y-%m-%d").strftime("%d/%m/%Y")
-
-    #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
-    dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Pharma", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
-    dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
-    dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
-
-    dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-
-    rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
-
-    rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
-    df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
-    fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Pharma')
-    st.plotly_chart(fig_commodities)
+        df_nifty = df_nifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
 
 
-    
-    #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
-    dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Auto", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
-    dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
-    dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+        df_banknifty = yf.download('^NSEBANK', interval="1d", start=previous_Date, end=tday)
+        df_banknifty['Date'] = pd.to_datetime(df_banknifty.index)
+        df_banknifty['Date'] = df_banknifty['Date'].apply(mpl_dates.date2num)
 
-    dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+        df_banknifty = df_banknifty.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
 
-    rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+        rsdata_bank = pd.merge(df_nifty, df_banknifty, left_index=True, right_index=True)
 
-    rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
-    df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
-    fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Auto')
-    st.plotly_chart(fig_commodities)
+        rsdata_bank['Relative Strength'] = rsdata_bank["Close_y"]/rsdata_bank["Close_x"]
 
-
-    
-    #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
-    dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Metal", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
-    dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
-    dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
-
-    dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-
-    rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
-
-    rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
-    df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
-    fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Metals')
-    st.plotly_chart(fig_commodities)
+        rs_df = pd.DataFrame()
+        rs_df["Date"] = df_nifty['Date']
+        rs_df["bank"] = rsdata_bank['Relative Strength'].pct_change()
+        df_bank = rsdata_bank[['Date_x', 'Relative Strength']]
+        fig_bank = px.line(df_bank, y='Relative Strength', title='Relative Strength - Bank Nifty')
+        #st.plotly_chart(fig_bank)
 
 
-    
-    #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
-    dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Media", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
-    dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
-    dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+        rsbank_list = df_bank["Relative Strength"].tolist()
+        datebank_list = df_bank["Date_x"].tolist()
 
-    dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+        # option = {
+        #               "xAxis": {
+        #                   "type": "category",
+        #                   "data": datebank_list,
+        #               },
+        #               "yAxis": {"type": "value"},
+        #               "series": [{"data": rsbank_list, "type": "line"}],
+        #           }
 
-    rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+        # option = oi_premium_bar_js()
 
-    rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
-    df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
-    fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Media')
-    st.plotly_chart(fig_commodities)
+        # st_echarts(
+        #                 options=option, height="400px",
+        #             )
+
+        
+
+        
+        df_niftyit = yf.download('^CNXIT', interval="1d", start=previous_Date, end=tday)
+        df_niftyit['Date'] = pd.to_datetime(df_niftyit.index)
+        df_niftyit['Date'] = df_niftyit['Date'].apply(mpl_dates.date2num)
+
+        df_niftyit = df_niftyit.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+        rsdata_it = pd.merge(df_nifty, df_niftyit, left_index=True, right_index=True)
+
+        rsdata_it['Relative Strength'] = rsdata_it["Close_y"]/rsdata_it["Close_x"]
+
+
+        rs_df["IT"] = rsdata_it['Relative Strength'].pct_change()
+
+        df_it = rsdata_it[['Date_x', 'Relative Strength']]
+        fig_it = px.line(df_it, y='Relative Strength', title='Relative Strength - IT')
+        #st.plotly_chart(fig_it)
+
+        stringdate1 = str(tday)
+        stringdate2 = str(previous_Date)
+
+        lastconnection = datetime.datetime.strptime(stringdate1, "%Y-%m-%d").strftime("%d/%m/%Y")
+        firstconnection = datetime.datetime.strptime(stringdate2, "%Y-%m-%d").strftime("%d/%m/%Y")
+
+        #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
+        dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Pharma", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
+        dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
+        dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+
+        dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+        rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+
+        rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
+        rs_df["Pharma"] = rsdata_commodities['Relative Strength'].pct_change()
+        df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
+        fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Pharma')
+        #st.plotly_chart(fig_commodities)
 
 
         
-    #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
-    dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Realty", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
-    dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
-    dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+        #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
+        dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Auto", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
+        dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
+        dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
 
-    dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+        dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
 
-    rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+        rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
 
-    rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
-    df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
-    fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Realty')
-    st.plotly_chart(fig_commodities)
+        rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
+        df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
+        rs_df["Auto"] = rsdata_commodities['Relative Strength'].pct_change()
+        fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Auto')
+        #st.plotly_chart(fig_commodities)
 
 
         
-    #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
-    dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty India Consumption", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
-    dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
-    dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+        #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
+        dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Metal", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
+        dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
+        dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
 
-    dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+        dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
 
-    rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+        rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
 
-    rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
-    df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
-    fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - FMCG')
-    st.plotly_chart(fig_commodities)
+        rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
+        rs_df["Metal"] = rsdata_commodities['Relative Strength'].pct_change()
+        df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
+        fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Metals')
+        #st.plotly_chart(fig_commodities)
+
+
+        
+        #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
+        dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Media", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
+        dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
+        dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+
+        dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+        rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+
+        rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
+        rs_df["Media"] = rsdata_commodities['Relative Strength'].pct_change()
+        df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
+        fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Media')
+        #st.plotly_chart(fig_commodities)
+
+
+            
+        #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
+        dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Realty", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
+        dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
+        dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+
+        dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+        rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+
+        rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
+        rs_df["Realty"] = rsdata_commodities['Relative Strength'].pct_change()
+        df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
+        fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Realty')
+        #st.plotly_chart(fig_commodities)
+
+
+            
+        #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
+        dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty India Consumption", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
+        dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
+        dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+
+        dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+        rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+
+        rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
+        rs_df["Consumption"] = rsdata_commodities['Relative Strength'].pct_change()
+        df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
+        fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - FMCG')
+        #st.plotly_chart(fig_commodities)
+
+
+        
+        #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
+        dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Infrastructure", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
+        dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
+        dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
+
+        dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+        rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
+
+        rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
+        rs_df["Infrastructure"] = rsdata_commodities['Relative Strength'].pct_change()
+        df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
+        fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Infrastructure')
+        #st.plotly_chart(fig_commodities)
+
+        rs_df = rs_df.iloc[1: , :]
+        #rs_df.dropna()
+
+        datelist = rs_df['Date'].to_list()
+        datelist2 = [str(x) for x in datelist]
+        #datelist2 = datelist.pop(0)
+        banklist = rs_df['bank'].to_list()
+        #banklist = banklist.pop(0)
+        itlist = rs_df['IT'].to_list()
+        #itlist = itlist.pop(0)
+        autolist = rs_df['Auto'].to_list()
+        #autolist = autolist.pop(0)
+        medialist = rs_df['Media'].to_list()
+        #medialist = medialist.pop(0)
+        realtylist = rs_df['Realty'].to_list()
+        #realtylist = realtylist.pop(0)
+        consumptionlist = rs_df['Consumption'].to_list()
+        #consumptionlist = consumptionlist.pop(0)
+        infrastructuallist = rs_df['Infrastructure'].to_list()
+        #infrastructuallist = infrastructuallist.pop(0)
+        pharmalist = rs_df['Pharma'].to_list()
+        #pharmalist = pharmalist.pop(0)
+
+
+        #st.write(rs_df)
+
+
+
+
+
+        rssector_graph = sector_graph(datelist2, banklist, itlist, autolist, medialist, realtylist, consumptionlist, infrastructuallist, pharmalist)
+
+        st_echarts(
+          rssector_graph, height=400
+        )
+
 
 
     
-    #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
-    dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Infrastructure", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
-    dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
-    dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
-
-    dfnifty_commodities = dfnifty_commodities.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
-
-    rsdata_commodities = pd.merge(df_nifty, dfnifty_commodities, left_index=True, right_index=True)
-
-    rsdata_commodities['Relative Strength'] = rsdata_commodities["Close_y"]/rsdata_commodities["Close_x"]
-    df_commodities = rsdata_commodities[['Date_x', 'Relative Strength']]
-    fig_commodities = px.line(df_commodities, y='Relative Strength', title='Relative Strength - Infrastructure')
-    st.plotly_chart(fig_commodities)
-
-
 
 
 
