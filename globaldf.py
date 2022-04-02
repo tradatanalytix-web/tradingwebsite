@@ -6,7 +6,7 @@ from fetchdata_investingcom import fetch_investingcom
 def globallist_get (sym, country):
     
     dftrynifty = fetch_investingcom(sym, country)
-    dftrynifty["returns"] = dftrynifty["Close"].pct_change()
+    dftrynifty["returns"] = (dftrynifty["Close"].pct_change() + 1).cumprod()
     #dftrynifty["returns"] = (dftrynifty["Close"]/dftrynifty["Close"].shift(1))
     dftrynifty_list = dftrynifty["returns"].tolist()
     dftrynifty_list1 = [float(x) for x in dftrynifty_list]
