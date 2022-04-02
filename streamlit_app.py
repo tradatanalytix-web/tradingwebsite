@@ -1,3 +1,4 @@
+import imp
 from nbformat import write
 import streamlit as st
 import numpy as np
@@ -75,6 +76,9 @@ from fetchdata_investingcom_hist import fetch_investingcom_hist
 import pytz
 from sqlalchemy import create_engine
 from globaldashboard import globaldashboard_metric
+from globaldf import *
+from globalcharts_summary import global_graph
+from simplelinechart_js import linechart_js
 
 
 
@@ -917,6 +921,54 @@ if selected_option == "Global Markets":
       
     
     if selected_globalmarkets == "Charts":
+
+        # Summary Chart -- Global
+
+        indialist = globallist_get("Nifty 50",'india')
+        uklist = globallist_get("FTSE 100",'united kingdom')
+        uslist = globallist_get("NASDAQ",'united states')
+        japanlist = globallist_get("Nikkei 225",'Japan')
+        hongkonglist = globallist_get("Hang Seng",'Hong Kong')
+        francelist = globallist_get("CAC 40",'france')
+        #sglist = globallist_get("STI",'singapore')
+        southkorlist = globallist_get("KOSPI",'south korea')
+        germanylist = globallist_get("DAX",'germany')
+        datelist = datelistget("DAX",'germany')
+
+
+
+
+
+        # linechartplot = linechart_js(datelist, indialist)
+
+
+        # st_echarts(
+        #     options = linechartplot, height=400,
+        # )
+
+
+        #st.write((indialist))
+        # st.write((uslist))
+        # st.write((gerlist))
+        # st.write((frlist))
+        # st.write((korlist))
+        # st.write((hklist))
+        # st.write((jplist))
+        # st.write((uklist))
+        #st.write((datelist))
+
+        plot_global = global_graph(datelist, indialist, uklist, uslist, southkorlist, japanlist, hongkonglist, francelist, germanylist)
+
+
+        st_echarts(
+            options = plot_global, height=400,
+        )
+
+
+
+
+
+
         df = pd.read_csv("./globalindices_sym.csv")
         #df.head()
         #st.write(df)
