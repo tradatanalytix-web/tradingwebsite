@@ -8,7 +8,6 @@ chart_studio
 cufflinks
 yfinance
 mpl_finance
-git+https://github.com/StreamAlpha/pynse.git
 mplfinance
 git+https://github.com/yanirs/streamlit-analytics
 streamlit-auth0-component
