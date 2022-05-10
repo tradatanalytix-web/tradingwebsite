@@ -16,7 +16,6 @@ Pillow
 hydralit_components
 streamlit-echarts
 streamlit_autorefresh
-git+https://github.com/alvarobartt/investpy.git@master
 pytz
 streamlit_analytics
 SQLAlchemy
