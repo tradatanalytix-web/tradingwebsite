@@ -535,7 +535,8 @@ if selected_option == "Open Interest Data":
         #gcmp = get_cmp(df, option)
       nifty_chain = td_obj.start_option_chain('NIFTY', dt(2023 , 3 , 2))
       df = nifty_chain.get_option_chain()
-      
+      df1 = pd.DataFrame(df)
+      st.dataframe(df1)
 
       import pandas as pd
 
