@@ -525,8 +525,8 @@ if selected_option == "Open Interest Data":
       from truedata_ws.websocket.TD import TD
       from datetime import datetime as dt
       from truedata_ws.websocket.TD import TD
-      
-      td_obj = TD('FYERS1940', 'bPhSZY1Y')
+      import logging 
+      td_obj = TD('FYERS1940', 'bPhSZY1Y', log_level= logging.WARNING)
       
 
       sym_chain = st.selectbox('Select Symbol', ('NIFTY', 'BANKNIFTY', 'SBIN'))
@@ -561,6 +561,8 @@ if selected_option == "Open Interest Data":
                   )
       gainers = td_obj.get_gainers(segment = "NSEEQ" , topn= 10 , df_style= False)
       st.dataframe(gainers)
+      
+
       td_obj.disconnect()  
 
 
