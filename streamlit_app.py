@@ -278,7 +278,7 @@ engine = create_engine(PG_STRING)
 
 
 
-holidays_dates = ["2022-03-18", "2022-01-26"]
+holidays_dates = ["2022-03-18", "2023-01-26"]
 
 
 current_time = datetime.datetime.now(pytz.timezone('Asia/Kolkata'))
@@ -639,36 +639,21 @@ if selected_option == "Charts":
 
 if selected_option == "Open Interest Data":
     #left, middle, right = st.columns(3)
-    symbol = 'NIFTY50'
 
-    exp_date = '07-apr-2022'
-
-    autorefresh_time = 3
-    #rainbow = ['15050', '15550', '16050', '16550', '17050', '17550', '18050', '18550']
     
-    # value1, value2 = middle.select_slider(
-    #                       'Select a range of values', options = rainbow,
-    #                       value = ('16550', '17550'))
+    
 
-    value1 = str(16700)
-    value2 = str(17700)
+
+    autorefresh_time = 15
+
 
     #st.write('Values:', values)
 
-    selected3 = option_menu("", ["Multi Strike OI","Open Interest", "Change in OI"], 
-    icons=['collection','collection', 'bank2'], 
+    selected3 = option_menu("", ["Open Interest"], 
+    icons=['bank2'], 
     menu_icon="graph-up-arrow", default_index=0, orientation = "horizontal")
     #selected2
     
-    dftrynifty = fetch_investingcom('Nifty 50', 'india')
-    niftyspot_price = dftrynifty.iloc[len(dftrynifty)-1]['Close']
-
-    t1 = str(int(np.round(niftyspot_price/100,0)*100)) + "CE"
-    t2 = str(int(np.round(niftyspot_price/100,0)*100)) + "PE"
-    t3 = str(int(np.round(niftyspot_price/100,0)*100) - 100) + "CE"
-    t4 = str(int(np.round(niftyspot_price/100,0)*100) + 100) + "PE"
-    t5 = str(int(np.round(niftyspot_price/100,0)*100) + 100) + "CE"
-    t6 = str(int(np.round(niftyspot_price/100,0)*100) - 100) + "PE"
 
     if selected3 == "Multi Strike OI":
       st_autorefresh(interval=3 * 60 * 1000, key="dataframerefresh")
@@ -724,61 +709,45 @@ if selected_option == "Open Interest Data":
     #symbol = "NIFTY50"
     # update every 3 mins
     if selected3 == "Open Interest":
-      st_autorefresh(interval=autorefresh_time * 60 * 1000, key="dataframerefresh")
-      with hc.HyLoader('Fetching Real time Data',hc.Loaders.standard_loaders,index=[3,0,5]):
+
+
+      from truedata_ws.websocket.TD import TD
+      
+      td_obj = TD('FYERS1940', 'bPhSZY1Y')
+      from datetime import datetime as dt
+      from truedata_ws.websocket.TD import TD
+
+      sym_chain = st.selectbox('Select Symbol', ('NIFTY', 'BANKNIFTY', 'SBIN'))
+
       #if refresh_button:
         #gcmp = get_cmp(df, option)
-        dftrynifty = fetch_investingcom('Nifty 50', 'india')
-        gcmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']
-        
-        gcmp = float(round(gcmp/50)*50)
-        gcmp1 = format(gcmp,".2f")
-        #st.write(gcmp1)
-        df_realtimeoi = fetch_optionschain(symbol, exp_date)
-        
-        #st.write(df_realtimeoi)
-        dfnew = df_realtimeoi[["strike_price", "ce_ltp", "ce_OI", "ce_OI_ch", "pe_ltp" ,"pe_OI" ,"pe_OI_ch"]]
-        fullpelist_oi = dfnew["pe_OI"].tolist()
-        fullcelist_oi = dfnew["ce_OI"].tolist()
-        
-        
-        rslt_df = dfnew.loc[value1:value2]
-        #st.write(rslt_df)
-        strikelist = rslt_df["strike_price"].tolist()
-        pelist_oi = rslt_df["pe_OI"].tolist()
-        celist_oi = rslt_df["ce_OI"].tolist()
-          
-        oic_chart_js = oi_premium_bar_js(strikelist, celist_oi, pelist_oi, gcmp1, titlegraph = "Real time Open Interest")
+      nifty_chain = td_obj.start_option_chain(sym_chain, dt(2023 , 3 , 2))
+      df = nifty_chain.get_option_chain()
+      
 
-        st_echarts(
-                      options=oic_chart_js, 
-                      height="400px",
-                    )
+      import pandas as pd
+
+      df['oi_num'] = pd.to_numeric(df['oi'])
+      df['oi_chg_num'] = pd.to_numeric(df['oi_change'])
+      df['ltp_num'] = pd.to_numeric(df['ltp'])
+      df['price_chg_num'] = pd.to_numeric(df['price_change'])
+
+      dfce = df[df['type']=="CE"]
+      dfpe = df[df['type']=="PE"]
+
+      pelist_oi = dfpe['oi_num'].tolist()
+      celist_oi = dfce["oi_num"].tolist()
+                
+      strikelist = df['strike'].tolist()
+      st.dataframe(df)
+      st.markdown(celist_oi)  
+      oic_chart_js = oi_premium_bar_js(strikelist, celist_oi, pelist_oi, gcmp = 17500, titlegraph = "Real time Open Interest")
+
+      st_echarts(
+                    options=oic_chart_js, 
+                    height="400px",
+                  )
         
-        test_list_ce = [float(i) for i in fullcelist_oi  if i]
-        test_list_pe = [float(i) for i in fullpelist_oi  if i]
-
-
-        sumce = sum(test_list_ce)
-        sumpe = sum(test_list_pe)          
-
-        pcr = sumpe / sumce
-        pcrgraph = pcr_gauge_graph(pcr/2*100)
-
-        # Plotting OI Graph
-        
-        #st.plotly_chart(oi_chart)
-
-        # Plotting OI Change Graph
-        
-        #st.plotly_chart(coi_chart)
-        md_results = f"**PCR for {symbol} **{round(pcr, 2)}"
-        st.markdown(md_results)
-
-        st_echarts(
-                      options=pcrgraph, 
-                      height="400px",
-                  )              
 
 
     if selected3 == "Change in OI":
