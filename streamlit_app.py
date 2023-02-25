@@ -15,7 +15,6 @@ from filterdata_fun import filtered_data
 from oichart_fun import oi_chart_graph
 from coichart_fun import coi_chart_graph
 from fiidiidatanalysis import fiidiidata
-from streamlit import caching
 from get_cmp_fun import get_cmp
 from fii_chart_fun import get_fii_chart
 from filterclientdat_fun import filterclientdat
