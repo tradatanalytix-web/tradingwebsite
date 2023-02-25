@@ -523,16 +523,17 @@ if selected_option == "Open Interest Data":
 
 
       from truedata_ws.websocket.TD import TD
-      
-      td_obj = TD('FYERS1940', 'bPhSZY1Y')
       from datetime import datetime as dt
       from truedata_ws.websocket.TD import TD
+      
+      td_obj = TD('FYERS1940', 'bPhSZY1Y')
+      
 
       sym_chain = st.selectbox('Select Symbol', ('NIFTY', 'BANKNIFTY', 'SBIN'))
 
       #if refresh_button:
         #gcmp = get_cmp(df, option)
-      nifty_chain = td_obj.start_option_chain(sym_chain, dt(2023 , 3 , 2))
+      nifty_chain = td_obj.start_option_chain('NIFTY', dt(2023 , 3 , 2))
       df = nifty_chain.get_option_chain()
       
 
@@ -558,7 +559,8 @@ if selected_option == "Open Interest Data":
                     options=oic_chart_js, 
                     height="400px",
                   )
-        
+
+      td_obj.disconnect()  
 
 
     if selected3 == "Change in OI":
