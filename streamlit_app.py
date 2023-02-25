@@ -559,7 +559,8 @@ if selected_option == "Open Interest Data":
                     options=oic_chart_js, 
                     height="400px",
                   )
-
+      gainers = td_obj.get_gainers(segment = "NSEEQ" , topn= 10 , df_style= False)
+      st.dataframe(gainers)
       td_obj.disconnect()  
 
 
