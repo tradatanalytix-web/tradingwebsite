@@ -21,6 +21,6 @@ pytz
 streamlit_analytics
 SQLAlchemy
 investpy
-truedata-ws
+breeze-connect==1.0.13
 
 

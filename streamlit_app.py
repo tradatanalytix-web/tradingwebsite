@@ -77,6 +77,7 @@ from globaldf import *
 from globalcharts_summary import global_graph
 from simplelinechart_js import linechart_js
 from sectorchart import sector_graph
+from breeze_connect import BreezeConnect
 
 
 
@@ -522,28 +523,49 @@ if selected_option == "Open Interest Data":
     if selected3 == "Open Interest":
 
 
-      from truedata_ws.websocket.TD import TD
-      from datetime import datetime as dt
-      from truedata_ws.websocket.TD import TD
-      import logging 
-      td_obj = TD('FYERS1940', 'bPhSZY1Y', log_level= logging.WARNING)
+
+
+      session_key = '5215471'
+
+      # Initialize SDK
+      breeze = BreezeConnect(api_key="16G_Mh68829o5105pg1646!O09d2fm43")
+
+      # Generate Session
+      breeze.generate_session(api_secret="6759%V7C09Acs(3567164*J00x@06`)3",
+                            session_token=session_key)
       
 
-      sym_chain = st.selectbox('Select Symbol', ('NIFTY', 'BANKNIFTY', 'SBIN'))
 
-      #if refresh_button:
-        #gcmp = get_cmp(df, option)
-      nifty_chain = td_obj.start_option_chain('NIFTY', dt(2023 , 3 , 2))
-      df = nifty_chain.get_option_chain()
-      df1 = pd.DataFrame(df)
-      st.dataframe(df1)
+      
+      sym_chain = st.selectbox('Select Symbol', ('NIFTY', 'BANKNIFTY', 'SBIN'))
+      chain_expiry = st.selectbox('Select Expiry', ('2023-03-23', '2023-03-29'))
+      bb111 = st.button("View")
+      
+      
+      res = breeze.get_option_chain_quotes(stock_code='NIFTY',
+              exchange_code="NFO",
+              product_type="options",
+              expiry_date="2023-03-23T06:00:00.000Z",
+              right="others"
+                          #,strike_price="16850"
+                        )
+      
+      df = pd.DataFrame(res['Success'])
+
+      df = df[df['open_interest'] > 0]
+      df = df.sort_values(by = 'strike_price', inplace = True)
+      df = df[['strike_price', 'right', 'open_interest', 'chnge_oi', 'ltp']]
+
+      st.dataframe(df)
+
+
 
       import pandas as pd
 
-      df['oi_num'] = pd.to_numeric(df['oi'])
-      df['oi_chg_num'] = pd.to_numeric(df['oi_change'])
+      df['oi'] = pd.to_numeric(df['open_interest'])
+      df['oi_chg'] = pd.to_numeric(df['chnge_oi'])
       df['ltp_num'] = pd.to_numeric(df['ltp'])
-      df['price_chg_num'] = pd.to_numeric(df['price_change'])
+      df['strike_string'] = pd.to_numeric(df['strike_price'])
 
       dfce = df[df['type']=="CE"]
       dfpe = df[df['type']=="PE"]
@@ -564,7 +586,8 @@ if selected_option == "Open Interest Data":
       st.dataframe(gainers)
       
 
-      td_obj.disconnect()  
+
+
 
 
     if selected3 == "Change in OI":
