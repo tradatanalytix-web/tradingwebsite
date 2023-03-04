@@ -541,6 +541,14 @@ if selected_option == "Open Interest Data":
       chain_expiry = st.selectbox('Select Expiry', ('2023-03-23', '2023-03-29'))
       bb111 = st.button("View")
       
+
+
+      res2 = breeze.get_historical_data_v2(interval="1minute",
+                            from_date= "2022-08-15T07:00:00.000Z",
+                            to_date= "2022-08-17T07:00:00.000Z",
+                            stock_code="ITC",
+                            exchange_code="NSE",
+                            product_type="cash")
       
       res = breeze.get_option_chain_quotes(stock_code='NIFTY',
               exchange_code="NFO",
@@ -550,8 +558,8 @@ if selected_option == "Open Interest Data":
                           #,strike_price="16850"
                         )
       
-      df = pd.DataFrame(res['Success'])
-
+      df = pd.DataFrame(res2['Success'])
+      st.dataframe(df)
       df = df[df['open_interest'] > 0]
       df = df.sort_values(by = 'strike_price', inplace = True)
       df = df[['strike_price', 'right', 'open_interest', 'chnge_oi', 'ltp']]
