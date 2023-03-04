@@ -1,7 +1,7 @@
 numpy==1.20.1
 truedata_ws
 pandas
-streamlit
+streamlit==1.2
 plotly.express
 matplotlib
 streamlit_option_menu
