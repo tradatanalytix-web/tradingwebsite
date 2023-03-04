@@ -523,7 +523,7 @@ if selected_option == "Open Interest Data":
     if selected3 == "Open Interest":
 
 
-
+      import pandas as pd
 
       session_key = '5215471'
 
@@ -549,19 +549,25 @@ if selected_option == "Open Interest Data":
                             stock_code="ITC",
                             exchange_code="NSE",
                             product_type="cash")
-      
+
+
       res = breeze.get_option_chain_quotes(stock_code='NIFTY',
               exchange_code="NFO",
               product_type="options",
-              expiry_date="2023-03-23T06:00:00.000Z",
+              expiry_date="2023-03-09T06:00:00.000Z",
               right="others"
                           #,strike_price="16850"
                         )
       
-      df = pd.DataFrame(res2['Success'])
-      st.dataframe(df)
+      st.write(res['Success'])
+      df = pd.DataFrame(res['Success'])
       df = df[df['open_interest'] > 0]
-      df = df.sort_values(by = 'strike_price', inplace = True)
+      df = df[['strike_price', 'right', 'open_interest', 'chnge_oi', 'ltp']]
+      st.dataframe(df)
+      df1 = pd.DataFrame(res2['Success'])
+      df = pd.DataFrame(res['Success'])
+      st.dataframe(df1)
+      
       df = df[['strike_price', 'right', 'open_interest', 'chnge_oi', 'ltp']]
 
       st.dataframe(df)
