@@ -22,6 +22,6 @@ streamlit_analytics
 SQLAlchemy
 investpy
 virtualenv
-breeze-connect==1.0.13
+breeze-connect
 
 
