@@ -23,6 +23,6 @@ SQLAlchemy
 investpy
 virtualenv
 breeze-connect
-webbrowser
+
 
 
