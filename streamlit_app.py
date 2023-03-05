@@ -909,7 +909,7 @@ if selected_option == "Derivatives Data":
           oic_chart_js = oi_premium_bar_js(strikelist, celist_oi, pelist_oi, gcmp, titlegraph = "Open Interest")
 
           st_echarts(
-                        options=oic_chart_js, height="400px",
+                        options=oic_chart_js, height="600px",
                     )
 
 
@@ -918,7 +918,7 @@ if selected_option == "Derivatives Data":
           oicoi_chart_js = oi_premium_bar_js(strikelist, celist_coi, pelist_coi, gcmp, titlegraph = "Change in OI")
 
           st_echarts(
-                        options=oicoi_chart_js, height="400px",
+                        options=oicoi_chart_js, height="600px",
                     )
                     
           #oi_chart = oi_chart_graph(filterdata)
@@ -939,7 +939,7 @@ if selected_option == "Derivatives Data":
           st.markdown(md_results)
 
           st_echarts(
-                        options=pcrgraph, height="400px",
+                        options=pcrgraph, height="600px",
                     )
           
           #st.markdown(f"<h4 style='text-align: center; color: white; background-color:SlateBlue'>{pcr}</h4>", unsafe_allow_html=True)
@@ -950,7 +950,7 @@ if selected_option == "Derivatives Data":
 
 
         st_echarts(
-                      options=max_pain_graph, height="400px",
+                      options=max_pain_graph, height="600px",
                   )
 
     if selected4 == "Future OI": 
