@@ -1,7 +1,7 @@
 numpy==1.20.1
 truedata_ws
 pandas
-streamlit==1.2
+streamlit
 plotly.express
 matplotlib
 streamlit_option_menu
@@ -23,5 +23,6 @@ SQLAlchemy
 investpy
 virtualenv
 breeze-connect
+webbrowser
 
 
