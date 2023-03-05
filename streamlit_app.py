@@ -83,7 +83,20 @@ from breeze_connect import BreezeConnect
 
 logo_top = Image.open("./tradatanalytix logo.png")
 
-st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon=logo_top)
+#import streamlit as st
+
+if "center" not in st.session_state:
+    layout = "wide"
+else:
+    layout = "centered" if st.session_state.center else "wide"
+
+st.set_page_config(page_title = 'TraDatAnalytix',layout=layout, page_icon=logo_top)
+
+st.checkbox(
+    "Viewing on a mobile?", key="center", value=st.session_state.get("center", False)
+)
+
+#st.set_page_config(page_title = 'TraDatAnalytix',layout='wide', page_icon=logo_top)
 
 
 
