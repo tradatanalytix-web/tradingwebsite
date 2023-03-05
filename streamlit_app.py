@@ -434,6 +434,22 @@ if selected_option == "*BUDGET SPECIAL*":
 #if selected_option == "Charts":
 if selected_option == "Charts":
     date_select = st.date_input('Intraday Chart for:')
+
+    session_key = '5221790'  
+    # Initialize SDK
+    breeze = BreezeConnect(api_key="16G_Mh68829o5105pg1646!O09d2fm43")
+
+    # Generate Session
+    breeze.generate_session(api_secret="6759%V7C09Acs(3567164*J00x@06`)3",
+                          session_token=session_key)
+    
+    res2 = breeze.get_historical_data_v2(interval="1minute",
+                            from_date= "2022-08-15T07:00:00.000Z",
+                            to_date= "2022-08-17T07:00:00.000Z",
+                            stock_code="ITC",
+                            exchange_code="NSE",
+                            product_type="cash")
+
     sym = st.selectbox('Select Symbol', ('HDB', 'SBIN.NS'))
     b_intra = st.button("Generate")
     
@@ -524,9 +540,17 @@ if selected_option == "Open Interest Data":
 
 
       import pandas as pd
+#      import webbrowser
 
-      session_key = '5215471'
+#      api_key="16G_Mh68829o5105pg1646!O09d2fm43"
+#      response = 'https://api.icicidirect.com/apiuser/login?api_key='+str(api_key)
+      
+#      webbrowser.open(response,new=1)
+#      session_key = st.input("Enter Authentication Code")
 
+#      if(len(session_key) > 4):
+
+      session_key = '5221790'  
       # Initialize SDK
       breeze = BreezeConnect(api_key="16G_Mh68829o5105pg1646!O09d2fm43")
 
@@ -543,13 +567,7 @@ if selected_option == "Open Interest Data":
       
 
 
-      res2 = breeze.get_historical_data_v2(interval="1minute",
-                            from_date= "2022-08-15T07:00:00.000Z",
-                            to_date= "2022-08-17T07:00:00.000Z",
-                            stock_code="ITC",
-                            exchange_code="NSE",
-                            product_type="cash")
-
+      
 
       res = breeze.get_option_chain_quotes(stock_code='NIFTY',
               exchange_code="NFO",
