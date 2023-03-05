@@ -470,8 +470,7 @@ if selected_option == "Open Interest Data":
 
     
     
-
-
+    
     autorefresh_time = 15
 
 
@@ -549,6 +548,7 @@ if selected_option == "Open Interest Data":
 #      session_key = st.input("Enter Authentication Code")
 
 #      if(len(session_key) > 4):
+      lc, rc = st.columns(2)
 
       session_key = '5221790'  
       # Initialize SDK
@@ -561,62 +561,55 @@ if selected_option == "Open Interest Data":
 
 
       
-      sym_chain = st.selectbox('Select Symbol', ('NIFTY', 'BANKNIFTY', 'SBIN'))
-      chain_expiry = st.selectbox('Select Expiry', ('2023-03-23', '2023-03-29'))
-      bb111 = st.button("View")
+      sym_chain = lc.selectbox('Select Symbol', ('NIFTY', 'BANKNIFTY', 'SBIN'))
+      chain_expiry = rc.selectbox('Select Expiry', ('2023-03-09', '2023-03-23'))
+      bb111 = st.button("View / Refresh")
       
 
 
       
-
-      res = breeze.get_option_chain_quotes(stock_code='NIFTY',
-              exchange_code="NFO",
-              product_type="options",
-              expiry_date="2023-03-09T06:00:00.000Z",
-              right="others"
-                          #,strike_price="16850"
-                        )
+      if bb111:
+         
+        res = breeze.get_option_chain_quotes(stock_code=sym_chain,
+                exchange_code="NFO",
+                product_type="options",
+                expiry_date=chain_expiry + "T06:00:00.000Z",
+                right="others"
+                            #,strike_price="16850"
+                          )
+        
+        df = pd.DataFrame(res['Success'])
+        df = df[df['strike_price'] >= 17000]
+        df = df[df['strike_price'] <= 18000]
+        df = df[['strike_price', 'right', 'open_interest', 'chnge_oi', 'ltp']]
+        
+        
       
-      st.write(res['Success'])
-      df = pd.DataFrame(res['Success'])
-      df = df[df['open_interest'] > 0]
-      df = df[['strike_price', 'right', 'open_interest', 'chnge_oi', 'ltp']]
-      st.dataframe(df)
-      df1 = pd.DataFrame(res2['Success'])
-      df = pd.DataFrame(res['Success'])
-      st.dataframe(df1)
       
-      df = df[['strike_price', 'right', 'open_interest', 'chnge_oi', 'ltp']]
-
-      st.dataframe(df)
 
 
 
-      import pandas as pd
+        df['oi'] = pd.to_numeric(df['open_interest'])
+        df['oi_chg'] = pd.to_numeric(df['chnge_oi'])
+        df['ltp_num'] = pd.to_numeric(df['ltp'])
+        #df['strike_string'] = pd.to_numeric(df['strike_price'])
+        df['strike_string'] = df["strike_price"].map(str)
 
-      df['oi'] = pd.to_numeric(df['open_interest'])
-      df['oi_chg'] = pd.to_numeric(df['chnge_oi'])
-      df['ltp_num'] = pd.to_numeric(df['ltp'])
-      df['strike_string'] = pd.to_numeric(df['strike_price'])
+        dfce = df[df['right']=="Call"]
+        dfpe = df[df['right']=="Put"]
 
-      dfce = df[df['type']=="CE"]
-      dfpe = df[df['type']=="PE"]
+        pelist_oi = dfpe['oi'].tolist()
+        celist_oi = dfce["oi"].tolist()
+            
+        strikelist = dfce['strike_string'].tolist()
+        
+        oic_chart_js = oi_premium_bar_js(strikelist, celist_oi, pelist_oi, gcmp = 17500, titlegraph = "Real time Open Interest")
 
-      pelist_oi = dfpe['oi_num'].tolist()
-      celist_oi = dfce["oi_num"].tolist()
-                
-      strikelist = df['strike'].tolist()
-      st.dataframe(df)
-      st.markdown(celist_oi)  
-      oic_chart_js = oi_premium_bar_js(strikelist, celist_oi, pelist_oi, gcmp = 17500, titlegraph = "Real time Open Interest")
+        st_echarts(
+                      options=oic_chart_js, 
+                      height="600px",
+                    )
 
-      st_echarts(
-                    options=oic_chart_js, 
-                    height="400px",
-                  )
-      gainers = td_obj.get_gainers(segment = "NSEEQ" , topn= 10 , df_style= False)
-      st.dataframe(gainers)
-      
 
 
 
