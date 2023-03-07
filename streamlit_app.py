@@ -700,43 +700,48 @@ if selected_option == "Global Markets":
 
     if selected_globalmarkets == "Dashboard":
       
+
+      import yfinance as yf
+      tdayyy = date.today()
+      tdayy = date.today() - datetime.timedelta(days=5)
+
       lc, mc, rc = st.columns(3)
 
       #NIFTY 50
-      dftrynifty = fetch_investingcom('Nifty 50', 'india')
+      dftrynifty = yf.download('^NSEI', interval="1d", start=tdayy, end=tdayyy)
       niftycmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']
       niftychangepc = (dftrynifty.iloc[len(dftrynifty)-1]['Close'] - dftrynifty.iloc[len(dftrynifty)-2]['Close'])/dftrynifty.iloc[len(dftrynifty)-2]['Close']
       niftychangepc = "{:.2%}".format(niftychangepc)
 
       # DOW 30
-      dftrynifty = fetch_investingcom('Dow 30', 'united states')
+      dftrynifty = yf.download('^DJI', interval="1d", start=tdayy, end=tdayyy)
       dowcmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']
       dowchangepc = (dftrynifty.iloc[len(dftrynifty)-1]['Close'] - dftrynifty.iloc[len(dftrynifty)-2]['Close'])/dftrynifty.iloc[len(dftrynifty)-2]['Close']
       dowchangepc = "{:.2%}".format(dowchangepc)
 
 
       # DAX
-      dftrynifty = fetch_investingcom('DAX', 'germany')
+      dftrynifty = yf.download('^GDAXI', interval="1d", start=tdayy, end=tdayyy)
       daxcmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']
       daxchangepc = (dftrynifty.iloc[len(dftrynifty)-1]['Close'] - dftrynifty.iloc[len(dftrynifty)-2]['Close'])/dftrynifty.iloc[len(dftrynifty)-2]['Close']
       daxchangepc = "{:.2%}".format(daxchangepc)
 
 
-      # CAC
-      dftrynifty = fetch_investingcom('CAC 40', 'france')
+      # CAC ^FCHI
+      dftrynifty = yf.download('^FCHI', interval="1d", start=tdayy, end=tdayyy)
       caccmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']
       cacchangepc = (dftrynifty.iloc[len(dftrynifty)-1]['Close'] - dftrynifty.iloc[len(dftrynifty)-2]['Close'])/dftrynifty.iloc[len(dftrynifty)-2]['Close']
       cacchangepc = "{:.2%}".format(cacchangepc)
 
 
-      # Nikkei 225
-      dftrynifty = fetch_investingcom('Nikkei 225', 'Japan')
+      # Nikkei 225 - ^N225
+      dftrynifty = yf.download('^N225', interval="1d", start=tdayy, end=tdayyy)
       nikcmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']
       nikchangepc = (dftrynifty.iloc[len(dftrynifty)-1]['Close'] - dftrynifty.iloc[len(dftrynifty)-2]['Close'])/dftrynifty.iloc[len(dftrynifty)-2]['Close']
       nikchangepc = "{:.2%}".format(nikchangepc)
 
       # Hang Sang
-      dftrynifty = fetch_investingcom('Hang Seng', 'Hong Kong')
+      dftrynifty = yf.download('^HSI', interval="1d", start=tdayy, end=tdayyy)
       hancmp = dftrynifty.iloc[len(dftrynifty)-1]['Close']
       hanchangepc = (dftrynifty.iloc[len(dftrynifty)-1]['Close'] - dftrynifty.iloc[len(dftrynifty)-2]['Close'])/dftrynifty.iloc[len(dftrynifty)-2]['Close']
       hanchangepc = "{:.2%}".format(hanchangepc)
@@ -745,7 +750,7 @@ if selected_option == "Global Markets":
 
       # FTSE
 
-      ftse_index = globaldashboard_metric('FTSE 100', 'united kingdom')
+      ftse_index = globaldashboard_metric('^FTSE', 'united kingdom')
       #strait_index = globaldashboard_metric('STI', 'singapore')
       kospi_index = globaldashboard_metric('KOSPI', 'south korea')
       nasdaq_index = globaldashboard_metric('NASDAQ', 'united states')
@@ -1121,7 +1126,7 @@ if selected_option == "Derivatives Data":
           # futurechart_js = futureoigraph_hist(datelist, currlist, nextlist)
 
           st_echarts(
-                        options=pcrchartjs, height="400px",
+                        options=pcrchartjs, height="600px",
                     )
           
           if (df.iloc[len(df)-1]['PCR'] > df.iloc[len(df)-2]['PCR']):
@@ -1234,6 +1239,31 @@ if selected_option == "Pick Outperformers":
       fig_it = px.line(df_it, y='Relative Strength', title='Relative Strength - IT')
       st.plotly_chart(fig_it)
 
+
+
+
+
+      df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
+      df_niftyit['Date'] = pd.to_datetime(df_niftyit.index)
+      df_niftyit['Date'] = df_niftyit['Date'].apply(mpl_dates.date2num)
+
+      df_niftyit = df_niftyit.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+
+      rsdata_it = pd.merge(df_nifty, df_niftyit, left_index=True, right_index=True)
+
+      rsdata_it['Relative Strength'] = rsdata_it["Close_y"]/rsdata_it["Close_x"]
+
+
+      rs_df["IT"] = rsdata_it['Relative Strength'].pct_change()
+
+      df_it = rsdata_it[['Date_x', 'Relative Strength']]
+      fig_it = px.line(df_it, y='Relative Strength', title='Relative Strength - IT')
+      st.plotly_chart(fig_it)
+
+
+
+
+
       stringdate1 = str(tday)
       stringdate2 = str(previous_Date)
 
@@ -1241,7 +1271,7 @@ if selected_option == "Pick Outperformers":
       firstconnection = datetime.datetime.strptime(stringdate2, "%Y-%m-%d").strftime("%d/%m/%Y")
 
       #df_niftyit = yf.download('^CNXAUTO', interval="1d", start=previous_Date, end=tday)
-      dfnifty_commodities = fetch_investingcom_hist(sym = "Nifty Pharma", country = "India", startdate = str(firstconnection), enddate = str(lastconnection))
+      dfnifty_commodities = yf.download('^CNXPHARMA', interval="1d", start=previous_Date, end=tday)
       dfnifty_commodities['Date'] = pd.to_datetime(dfnifty_commodities.index)
       dfnifty_commodities['Date'] = dfnifty_commodities['Date'].apply(mpl_dates.date2num)
 
